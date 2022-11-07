@@ -1,0 +1,67 @@
+﻿ {file}←ctl SpeedScope(depth fnname line elapsed);stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;file;md;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;base64
+ file base64 md←ctl
+⍝ minimum depth: remove the crud to make the file smaller
+ :If md≠0
+     depth fnname line elapsed⌿⍨←⊂depth>md
+     depth-←md+1
+ :EndIf
+ depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth
+ fnname←{(2×'#.'≡2↑⍵)↓⍵}¨fnname
+ depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨((line=¯1)∧1,⍨2≢/fnname)
+ depth+←line=¯1
+
+ _out←⎕NEW Writer(file base64)
+ R_←_out.Close #.uDefer ⍬
+ ⍞←'⍝ '
+ ⎕PP←18
+ stk←⍬
+ ld lf ll←¯1000 '' ¯1000
+ fmt←{
+     (¯1↓';'#.vtol⌽⍵),' ',⍕⍺
+ }
+
+ :If 0
+     spt←{
+⍝ ⍺=valori ⍵=profondità ramo
+         r←(¯1+⌈/1,⍵),⍴⍵
+         m←¯1 0↓(1-⍵)⊖1⍪r⍴0
+         b←,∧⍀~m
+         i←(,m){(⍺/⍵)[+\⍺]},(⍴m)⍴⍳¯1↑⍴m
+         x←⌈⌿(⍴m)⍴i×b
+         f←0=2|⍵
+         k←x×f
+         tot←⍺
+         tot[f/x]-←f/⍺
+         tot
+     }
+     s←0⌈(⌈1000000×elapsed)spt 1+depth
+ :Else
+  ⍝ the timings in SpeedScope are displayed in microseconds
+     s←0⌈⌈1000000×elapsed
+ :EndIf
+
+ :For (d f l e sp) :InEach depth fnname line elapsed s
+     :If d>ld
+         stk,⍨←⊂f,(¯1≠l)/'[',(⍕l),']'
+     :ElseIf d<ld
+         stk←(1+0.5×ld-d)↓stk
+         stk,⍨←⊂f,(¯1≠l)/'[',(⍕l),']'
+     :Else
+⍝59  #.Conga.LIB.Send                          4     377       7.371103391051292          35.96187336370349         1131      3770
+⍝60  #.Conga.⍙CallRL                                 377      26.184714399278164          26.184714399278164         377       377
+⍝60  #.Conga.LIB.check                               377       2.406055573374033           2.406055573374033        2262      2262
+⍝61  #.Conga.LIB.check                         0     377       0.3276783972978592          0.3276783972978592        377       377
+         (⊃stk)←f,(¯1≠l)/'[',(⍕l),']'
+     :EndIf
+     :If sp>0
+     :AndIf _out.Write sp fmt stk
+         ⍞←'○'
+     :EndIf
+     ld←d
+ :EndFor
+ :If _out.Flush 1
+     ⍞←'file probably too big'
+ :EndIf
+ ⍞←'∘'
+ R_.DO
+⍝∘ (c)APLIT D PRF stf 19/01/2022 12:54           1494228227 C01

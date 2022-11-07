@@ -1,0 +1,13 @@
+﻿ {blob}←GraphFromPerfRecorder file;blob;wx
+ :If ''≡#.DLTB file
+     wx←''
+     file←#.wIFile ¯4
+ :AndIf 1≡#.wCanceled
+     blob←⎕NULL
+     :Return
+ :EndIf
+
+ blob←file∘uFREAD¨1 2 3 5
+
+ Graph blob
+⍝∘ (c)APLIT D PRF stf 24/10/2022 12:22          ¯1137053907 C01

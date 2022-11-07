@@ -1,0 +1,101 @@
+﻿:Class Writer
+
+    :field public instance _file
+    :field public instance _base64
+    :field public instance _tie
+    :field public instance _written
+    :field public instance _maxbufsize
+    :field public instance _leftover
+
+    i8←{¯128+256|⍵+128}
+
+      base64enc←{
+          ⎕IO ⎕ML←0 1             ⍝ Base64 encoding and decoding as used in MIME.
+          ⍺←⎕A,(#.ùC ⎕A),⎕D,'+/'
+          ⍺[2⊥⍉{⍵⍴⍨6,⍨(≢⍵)÷6}{⍵↑⍨6×⌈(≢⍵)÷6}11 ⎕DR⊃0 83 ⎕DR ⍵]
+      }
+
+    ∇ {r}←writeb64 buf;z;x;c
+      z←_leftover,i8'UTF-8'⎕UCS #.ml1.∊buf,¨⊂⎕UCS 13 10
+      x←z↑⍨3×⌊3÷⍨≢z
+      _leftover←z↑⍨-(≢z)|3
+      c←⎕UCS base64enc x
+      _written+←≢c
+      r←c #.PLUS.nappend _tie,83
+    ∇
+
+      write←{
+          (⍵'UTF-8-BOM')⎕NPUT _file 2
+      }
+
+      writeutf8←{
+          (i8'UTF-8'⎕UCS ⍵)#.PLUS.nappend _tie 83
+      }
+
+    ∇ make(file base64)
+      :Access public instance
+      :Implements constructor
+      _file _base64←file base64
+      _tie←⍬
+      _written←0
+      _buf←⍬
+      _maxbufsize←10000
+      _leftover←⍬
+     
+      :If _file≡''
+          _file←'k:\users\stefano\sofia\profile.collapsedstack.txt'
+      :EndIf
+      3 ⎕NDELETE _file
+     
+      :If _base64
+          _tie←_file #.PLUS.ncreate 0
+          writeutf8'speedscope.loadFileFromBase64("Dyalog_Perf.collapsedstack.txt","77u/'
+      :EndIf
+    ∇
+
+    ∇ {_}←Close _
+      :Access public instance
+      #.PLUS.nuntie _tie
+    ∇
+
+    ∇ {b}←Write line
+      :Access public instance
+      _buf,←⊂line
+      :If b←_maxbufsize<≢_buf
+          Flush 0
+      :EndIf
+    ∇
+
+    ∇ {toobig}←Flush final;x
+      :Access public instance
+      :If ~0∊⍴_buf
+          :If _base64
+              writeb64 _buf
+          :Else
+              write _buf
+          :EndIf
+          _buf←⍬
+      :EndIf
+      :If final
+      :AndIf _base64
+          :If ~0∊⍴_leftover
+              _written+←≢x←⎕UCS base64enc _leftover
+              x #.PLUS.nappend _tie,83
+          :EndIf
+          writeutf8'='⍴⍨{(×4|⍵)×4-4|⍵}_written
+          writeutf8'")',⎕UCS 13 10
+      :EndIf
+      toobig←(510000000×(3+_base64)÷3)<⊃2 ⎕NINFO _file
+    ∇
+
+    ∇ dispose
+      :Implements destructor
+      :Trap 0
+          Close ⍬
+      :Else
+          ⎕←'⍝ '⎕DMX
+      :EndTrap
+    ∇
+
+:EndClass
+⍝∘ (c)APLIT D PRF stf 19/01/2022 14:52           ¯315321079 C01
