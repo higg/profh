@@ -1,4 +1,4 @@
-﻿ {file}←ctl SpeedScope(depth fnname line elapsed);stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;file;md;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;base64
+ {file}←ctl SpeedScope(depth fnname line elapsed);stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;file;md;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;base64
  file base64 md←ctl
 ⍝ minimum depth: remove the crud to make the file smaller
  :If md≠0
@@ -11,7 +11,6 @@
  depth+←line=¯1
 
  _out←⎕NEW Writer(file base64)
- R_←_out.Close #.uDefer ⍬
  ⍞←'⍝ '
  ⎕PP←18
  stk←⍬
@@ -63,5 +62,5 @@
      ⍞←'file probably too big'
  :EndIf
  ⍞←'∘'
- R_.DO
+ _out.Close
 ⍝∘ (c)APLIT D PRF stf 19/01/2022 12:54           1494228227 C01
