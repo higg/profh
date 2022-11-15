@@ -39,4 +39,3 @@
  ⍝ ↓↓↓ Much heuristic, very wow.
  ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
  3 ⎕NDELETE file ⍝ Delete export file
-⍝∘ (c)APLIT D PRF stf 24/10/2022 12:13          ¯1096400100 C01

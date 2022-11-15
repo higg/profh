@@ -10,4 +10,3 @@
  blob←file∘uFREAD¨1 2 3 5
 
  Graph blob
-⍝∘ (c)APLIT D PRF stf 24/10/2022 12:22          ¯1137053907 C01
