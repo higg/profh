@@ -7,6 +7,8 @@
     :field public instance _maxbufsize
     :field public instance _leftover
 
+    :field private shared _MIME_EOL ← ⎕UCS 13 10 ⍝ CR/LF
+
     i8←{¯128+256|⍵+128} ⍝ Converts to signed byte
 
       base64enc←{
@@ -16,8 +18,7 @@
       }
 
     ∇ {r}←writeb64 buf;z;x;c
-      ⍝ //! Confirm intention to just set the NS to ML1
-      z←_leftover,i8'UTF-8'⎕UCS{⎕ML←1 ⋄ ∊⍵}buf,¨⊂⎕UCS 13 10 ⍝ Append CR/LFs, flatten, and convert to UTF-8
+      z←_leftover,i8'UTF-8'⎕UCS∊buf,¨⊂_MIME_EOL ⍝ Append CR/LFs, flatten, and convert to UTF-8
       x←z↑⍨3×⌊3÷⍨≢z
       _leftover←z↑⍨-(≢z)|3
       c←⎕UCS base64enc x
@@ -84,7 +85,7 @@
               x ⎕NAPPEND _tie,83
           :EndIf
           writeutf8'='⍴⍨{(×4|⍵)×4-4|⍵}_written
-          writeutf8'")',⎕UCS 13 10
+          writeutf8'")',_MIME_EOL
       :EndIf
       toobig←(510000000×(3+_base64)÷3)<⊃2 ⎕NINFO _file
     ∇

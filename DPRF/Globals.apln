@@ -1,0 +1,5 @@
+:Namespace Globals
+
+    ##.(⎕IO ⎕ML)←1 1        ⍝ Ensure default settings in namespace
+
+:EndNamespace
