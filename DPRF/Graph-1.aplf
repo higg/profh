@@ -9,7 +9,7 @@
  ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
  ⍝
  :If 0≠⎕NC'fnname' ⍝ If `fnname` defined, use it for results pruning //! Make explicit
-     ix←0⌈¯1+⊃#.WHERE(2⊃ctl)≢¨⊂fnname
+     ix←0⌈¯1+⊃⍸(2⊃ctl)≢¨⊂fnname
      ctl←ix↓¨ctl
      md←0⌈¯1+(⊃ctl)[1]
  :Else
