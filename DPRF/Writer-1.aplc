@@ -13,7 +13,7 @@
 
       base64enc←{
           ⎕IO ⎕ML←0 1             ⍝ Base64 encoding and decoding as used in MIME.
-          ⍺←⎕A,(#.ùC ⎕A),⎕D,'+/'
+          ⍺←⎕A,(⎕C ⎕A),⎕D,'+/'
           ⍺[2⊥⍉{⍵⍴⍨6,⍨(≢⍵)÷6}{⍵↑⍨6×⌈(≢⍵)÷6}11 ⎕DR⊃0 83 ⎕DR ⍵]
       }
 
