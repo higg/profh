@@ -7,7 +7,7 @@
     :field public instance _maxbufsize
     :field public instance _leftover
 
-    i8←{¯128+256|⍵+128}
+    i8←{¯128+256|⍵+128} ⍝ Converts to signed byte
 
       base64enc←{
           ⎕IO ⎕ML←0 1             ⍝ Base64 encoding and decoding as used in MIME.
@@ -16,7 +16,8 @@
       }
 
     ∇ {r}←writeb64 buf;z;x;c
-      z←_leftover,i8'UTF-8'⎕UCS #.ml1.∊buf,¨⊂⎕UCS 13 10
+      ⍝ //! Confirm intention to just set the NS to ML1
+      z←_leftover,i8'UTF-8'⎕UCS{⎕ML←1 ⋄ ∊⍵}buf,¨⊂⎕UCS 13 10 ⍝ Append CR/LFs, flatten, and convert to UTF-8
       x←z↑⍨3×⌊3÷⍨≢z
       _leftover←z↑⍨-(≢z)|3
       c←⎕UCS base64enc x
