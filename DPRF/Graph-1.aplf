@@ -23,7 +23,7 @@
 
  file 1 md SpeedScope ctl
 
- arg←#.uTC'file:///⍟1/index.html#localProfilePath=⍟0'file dir
+ arg←'file:///',dir,'/index.html#localProfilePath=',file
  #._OS.ShellExecute'msedge.exe'arg
 
 ⍝ ↓↓↓ Much heuristic, very wow.
