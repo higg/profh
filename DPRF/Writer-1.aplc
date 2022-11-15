@@ -1,4 +1,4 @@
-﻿:Class Writer
+:Class Writer
 
     :field public instance _file
     :field public instance _base64
@@ -21,7 +21,7 @@
       _leftover←z↑⍨-(≢z)|3
       c←⎕UCS base64enc x
       _written+←≢c
-      r←c #.PLUS.nappend _tie,83
+      r←c ⎕NAPPEND _tie,83
     ∇
 
       write←{
@@ -29,7 +29,7 @@
       }
 
       writeutf8←{
-          (i8'UTF-8'⎕UCS ⍵)#.PLUS.nappend _tie 83
+          (i8'UTF-8'⎕UCS ⍵)⎕NAPPEND _tie 83
       }
 
     ∇ make(file base64)
@@ -48,14 +48,14 @@
       3 ⎕NDELETE _file
      
       :If _base64
-          _tie←_file #.PLUS.ncreate 0
+          _tie←_file ⎕NCREATE 0
           writeutf8'speedscope.loadFileFromBase64("Dyalog_Perf.collapsedstack.txt","77u/'
       :EndIf
     ∇
 
     ∇ {_}←Close _
       :Access public instance
-      #.PLUS.nuntie _tie
+      ⎕NUNTIE _tie
     ∇
 
     ∇ {b}←Write line
@@ -80,7 +80,7 @@
       :AndIf _base64
           :If ~0∊⍴_leftover
               _written+←≢x←⎕UCS base64enc _leftover
-              x #.PLUS.nappend _tie,83
+              x ⎕NAPPEND _tie,83
           :EndIf
           writeutf8'='⍴⍨{(×4|⍵)×4-4|⍵}_written
           writeutf8'")',⎕UCS 13 10

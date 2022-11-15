@@ -1,4 +1,4 @@
-﻿ {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;dir;i
+ {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;dir;i
  ⍝ the timings in SpeedScope are displayed in microseconds
  dir←Init''
  :If ctl≡⍬
@@ -17,9 +17,9 @@
  :EndIf
 
  tmpl←#._OS.JoinPath(#._OS.GetTempPath ⍬)'speedscope_.js'
- tie←tmpl #.PLUS.ncreate #.PLUS.opt'Unique' 1⊢0
- file←⊃0 #.PLUS.ninfo tie
- #.PLUS.nuntie tie
+ tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
+ file←⊃0 ⎕NINFO tie
+ ⎕NUNTIE tie
 
  file 1 md SpeedScope ctl
 
@@ -27,6 +27,6 @@
  #._OS.ShellExecute'msedge.exe'arg
 
 ⍝ ↓↓↓ Much heuristic, very wow.
- ⎕DL 2+(⊃2 #.PLUS.ninfo file)÷10000000
- 3 #.PLUS.ndelete file
+ ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000
+ 3 ⎕NDELETE file
 ⍝∘ (c)APLIT D PRF stf 24/10/2022 12:13          ¯1096400100 C01

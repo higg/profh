@@ -1,9 +1,9 @@
-﻿ {dir}←Init _
+ {dir}←Init _
 ⍝ extract package JNPO in local cache
 
  :Hold 'SpeedScope_Init'
      #.uGSTK',DPKG'
-     dir←PATH←⊃#.DPKG.DPackage.Install #.PLUS.opt('InCache' 1)('RootFolder' 'NPOI')('WithHash' 1)⊢'JSPD'
+     dir←PATH←⊃#.DPKG.DPackage.Install ⎕OPT('InCache' 1)('RootFolder' 'NPOI')('WithHash' 1)⊢'JSPD'
      #.uGSTK 0
  :EndHold
 ⍝∘ (c)APLIT D PRF stf 19/01/2022 12:33          ¯1455258654 C01
