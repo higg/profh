@@ -1,5 +1,6 @@
 :Namespace Globals
 
-    ##.(⎕IO ⎕ML)←1 1        ⍝ Ensure default settings in namespace
+    ##.(⎕IO ⎕ML)←1 1            ⍝ Ensure default settings in package namespace
+    ##.PKGNM←'ProfileAdapter'   ⍝ Package name (may be used in file paths)
 
 :EndNamespace

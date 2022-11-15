@@ -1,7 +1,7 @@
  {dir}←Init _
 ⍝ extract package JNPO in local cache
 
- :Hold 'SpeedScope_Init'
+ :Hold PKGNM            ⍝ Ensure no parallel execution
      #.uGSTK',DPKG'
      dir←PATH←⊃#.DPKG.DPackage.Install ⎕OPT('InCache' 1)('RootFolder' 'NPOI')('WithHash' 1)⊢'JSPD'
      #.uGSTK 0
