@@ -1,6 +1,7 @@
  {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;dir;i
  ⍝ the timings in SpeedScope are displayed in microseconds
- ⍝ dir←Init'' //! Not sure this will be needed
+ ⍝ dir←Init'' //! Not sure this will be needed, but need hooks to help users
+ ⍝ //! remove dir local
 
  ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5 ⎕PROFILE'tree'}ctl     ⍝ Fetch profile results, unless provided
 
@@ -22,7 +23,7 @@
  ⍝
  ⍝ Create temporary export file.
  ⍝
- tmpl←#._OS.JoinPath(#._OS.GetTempPath ⍬)'speedscope_.js'
+ tmpl←TEMP_DIR,FILE_SEP,'speedscope_.js' ⍝ //! TEMP_DIR uses / on windows
  tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
  file←⊃0 ⎕NINFO tie
  ⎕NUNTIE tie
@@ -32,10 +33,10 @@
  ⍝
  ⍝ Launch speedscope in browser.
  ⍝
- arg←'file:///',dir,'/index.html#localProfilePath=',file
- #._OS.ShellExecute'msedge.exe'arg
+ arg←Config.SpeedScopeLoc,'/index.html#localProfilePath=',file
+ ⎕CMD'start ',Config.Browser,' ',arg ⍝ //! Make OS agnostic
 
-⍝ ↓↓↓ Much heuristic, very wow.
+ ⍝ ↓↓↓ Much heuristic, very wow.
  ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
  3 ⎕NDELETE file ⍝ Delete export file
 ⍝∘ (c)APLIT D PRF stf 24/10/2022 12:13          ¯1096400100 C01
