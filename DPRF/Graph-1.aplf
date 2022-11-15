@@ -1,32 +1,41 @@
  {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;dir;i
  ⍝ the timings in SpeedScope are displayed in microseconds
- dir←Init''
- :If ctl≡⍬
-     ctl←1 2 3 5 ⎕PROFILE'tree'
- :EndIf
- :If 0≠⎕NC'fnname'
+ ⍝ dir←Init'' //! Not sure this will be needed
+
+ ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5 ⎕PROFILE'tree'}ctl     ⍝ Fetch profile results, unless provided
+
+ ⍝
+ ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
+ ⍝
+ :If 0≠⎕NC'fnname' ⍝ If `fnname` defined, use it for results pruning //! Make explicit
      ix←0⌈¯1+⊃#.WHERE(2⊃ctl)≢¨⊂fnname
      ctl←ix↓¨ctl
      md←0⌈¯1+(⊃ctl)[1]
  :Else
-     :If 0≠i←+/∧\0=4⊃ctl
+     :If 0≠i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
          md←i⊃⊃ctl
      :Else
          md←0
      :EndIf
  :EndIf
 
+ ⍝
+ ⍝ Create temporary export file.
+ ⍝
  tmpl←#._OS.JoinPath(#._OS.GetTempPath ⍬)'speedscope_.js'
  tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
  file←⊃0 ⎕NINFO tie
  ⎕NUNTIE tie
 
- file 1 md SpeedScope ctl
+ file 1 md SpeedScope ctl ⍝ Perform export
 
+ ⍝
+ ⍝ Launch speedscope in browser.
+ ⍝
  arg←'file:///',dir,'/index.html#localProfilePath=',file
  #._OS.ShellExecute'msedge.exe'arg
 
 ⍝ ↓↓↓ Much heuristic, very wow.
- ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000
- 3 ⎕NDELETE file
+ ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
+ 3 ⎕NDELETE file ⍝ Delete export file
 ⍝∘ (c)APLIT D PRF stf 24/10/2022 12:13          ¯1096400100 C01
