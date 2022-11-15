@@ -1,6 +1,6 @@
 :Namespace Config
 
-    Browser         ←'chrome'
+    Browser         ←'chrome --new-window'
     SpeedScopeLoc   ←'file:///c:/dev/dyalog-profiling/lib/speedscope'
 
 :EndNamespace
