@@ -6,5 +6,6 @@
     ##.OS←⊃'#'⎕WG'APLVERSION'       ⍝ Host operating system
     ##.IS_WIN←'win'≡⎕C 3↑##.OS      ⍝ Boolean indicating Windows-based OS
     ##.FILE_SEP←'/\'⌷⍨1+##.IS_WIN   ⍝ Host-native file separator character
+    ##.TEMP_DIR←739⌶0               ⍝ Suitable location for temporary files
 
 :EndNamespace
