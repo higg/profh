@@ -1,12 +1,18 @@
- {file}←ctl SpeedScope(depth fnname line elapsed);stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;file;md;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;base64
- file base64 md←ctl
-⍝ minimum depth: remove the crud to make the file smaller
+{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;trimPfx
+
+ file base64 md←ctl ⍝ Decompose left argument: filepath/base64-flag/min-depth
+
+ ⍝
+ ⍝ minimum depth: remove the crud to make the file smaller
+ ⍝ //! Make md be the minimum depth to retain, not prune (else rename)
+ ⍝
  :If md≠0
-     depth fnname line elapsed⌿⍨←⊂depth>md
-     depth-←md+1
+     depth fnname line elapsed⌿⍨←⊂depth>md ⍝ //! ≥ (but need to adjust caller)
+     depth-←md+1 ⍝ no +1
  :EndIf
+
  depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth
- fnname←{(2×'#.'≡2↑⍵)↓⍵}¨fnname
+ fnname←{(2×'#.'≡2↑⍵)↓⍵}¨fnname ⍝ Trim leading root namespace indicators
  depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨((line=¯1)∧1,⍨2≢/fnname)
  depth+←line=¯1
 
