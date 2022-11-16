@@ -1,4 +1,4 @@
-{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg;trimPfx
+{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg
 
  file base64 md←ctl ⍝ Decompose left argument: filepath/base64-flag/min-depth
 
@@ -12,7 +12,7 @@
  :EndIf
 
  depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth
- fnname←{(2×'#.'≡2↑⍵)↓⍵}¨fnname ⍝ Trim leading root namespace indicators
+ fnname trimPfx⍨←'#.' ⍝ Trim root namespace indicators
  depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨((line=¯1)∧1,⍨2≢/fnname)
  depth+←line=¯1
 
