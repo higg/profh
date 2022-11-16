@@ -1,0 +1,3 @@
+:Namespace Utils
+    ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
+:EndNamespace
