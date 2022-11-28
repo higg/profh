@@ -4,16 +4,16 @@
  ⍝ //! remove dir local
 
  ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5 ⎕PROFILE'tree'}ctl     ⍝ Fetch profile results, unless provided
-
  ⍝ ctl ← 1: depth level  2: function name  3: function line number  4: exclusive accumulated time (ms)
 
  ⍝
  ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
  ⍝
  :If 0≠⎕NC'fnname' ⍝ If `fnname` defined, use it for results pruning //! Make explicit
-     ix←0⌈¯1+⊃⍸(2⊃ctl)≢¨⊂fnname
-     ctl←ix↓¨ctl
-     md←0⌈¯1+(⊃ctl)[1]
+     ix←0⌈¯1+⊃⍸(2⊃ctl)≢¨⊂fnname ⍝ (I)nde(x) of function's first occurence
+     ctl←ix↓¨ctl                ⍝ Remove entries before it
+     md←0⌈¯1+(⊃ctl)[1]          ⍝ //! ???
+     ⍝ fnname should be rationalized against '#.' removing heuristic
  :Else
      :If 0≠i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
          md←i⊃⊃ctl

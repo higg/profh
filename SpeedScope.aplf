@@ -11,7 +11,7 @@
      depth-←md+1 ⍝ no +1
  :EndIf
 
- depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth
+ depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth ⍝ //! Prune after a non-initial depth-0
  fnname trimPfx⍨←'#.' ⍝ Trim root namespace indicators
  depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨((line=¯1)∧1,⍨2≢/fnname)
  depth+←line=¯1
