@@ -25,7 +25,7 @@
  ⍝
  ⍝ Create temporary export file.
  ⍝
- tmpl←TEMP_DIR,FILE_SEP,'speedscope_.js' ⍝ //! TEMP_DIR uses / on windows
+ tmpl←TEMP_DIR,'/speedscope_.js'
  tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
  file←⊃0 ⎕NINFO tie
  ⎕NUNTIE tie
