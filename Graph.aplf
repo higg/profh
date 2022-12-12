@@ -42,8 +42,8 @@
  ⍝
  ⍝ Launch speedscope in browser.
  ⍝
- arg←Config.SpeedScopeLoc,'/index.html#localProfilePath=',file
- ⎕CMD'start ',Config.Browser,' ',arg ⍝ //! Make OS agnostic
+ arg←Config.Curr.SpeedScopeLoc,'/index.html#localProfilePath=',file
+ ⎕CMD'start ',Config.Curr.browser,' ',arg ⍝ //! Make OS agnostic
 
  ⍝ ↓↓↓ Much heuristic, very wow.
  ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch

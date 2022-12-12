@@ -84,13 +84,14 @@
     __SpeedScope←{
         ⍵.Run←SpeedScope
         ⍵.Help←{'help level: ',⍕⍵}
+        ⍵.Parse←'-browser='
         ⍵
     }
 
     _preRunHook←{
         x←Import 0                      ⍝ Install tool code, if needed
-        ⎕THIS.NS←⍎NS                    ⍝ Resolve tool namespace     
-        ⍵
+        ⎕THIS.NS←⍎NS                    ⍝ Resolve tool namespace
+        NS.Config.apply ⍵               ⍝ Apply modifiers to global config
     }
 
     NS←'⎕SE.MMM'                        ⍝ Tool namespace, promoted to reference when loaded //! Make configurable
@@ -104,8 +105,9 @@
     }
 
     SpeedScope←{
+        ⍝ ##.NS.Config.Browser←⍵.browser
         r←##.NS.Graph ⍬
-        'SpeedScope implemented! ',⍵
+        'SpeedScope implemented! ',⍕⍵
     }
 
 

@@ -1,6 +1,14 @@
 :Namespace Config
 
-    Browser         ←'chrome --new-window'
-    SpeedScopeLoc   ←'file:///c:/dev/dyalog-profiling/lib/speedscope'
+    Default←⎕NS⍬
+    Default.browser         ←'chrome --new-window'
+    Default.SpeedScopeLoc   ←'file:///c:/dev/dyalog-profiling/lib/speedscope'
+
+    apply←{
+        ⎕THIS.Curr←⎕NS Default
+        Curr.browser←Default.browser ⍵.Switch 'browser'
+        ⍝ x←Curr ##.update ⍵
+        ⍵
+    }
 
 :EndNamespace
