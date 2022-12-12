@@ -1,11 +1,11 @@
 :Namespace Utils
     ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
 
-	upserti←{							⍝ Upserts intersecting fields from dict ⍵ to ⍺
+	update←{							⍝ Updates intersecting fields from dict ⍵ to ⍺
         i←⊃∩/{vtrim¨↓⍵.⎕NL⍳9}¨⍺ ⍵       ⍝ Find intersecting fields
-        ⍺⍎¨'←⍵.'∘{⍵,⍺,⍵}¨i              ⍝ Copy fields
+        ⍺⍎¨'←⍵.'∘{⍵,⍺,⍵}¨i              ⍝ Perform update
 	}
-	##.upserti←upserti
+	##.update←update
 
 
 
