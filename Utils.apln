@@ -1,3 +1,39 @@
 :Namespace Utils
     ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
+
+	upserti←{							⍝ Upserts intersecting fields from dict ⍵ to ⍺
+        i←⊃∩/{vtrim¨↓⍵.⎕NL⍳9}¨⍺ ⍵       ⍝ Find intersecting fields
+        ⍺⍎¨'←⍵.'∘{⍵,⍺,⍵}¨i              ⍝ Copy fields
+	}
+	##.upserti←upserti
+
+
+
+	⍝
+	⍝ --- Lifted from dfns workspace ------------------------------------------
+	⍝
+
+	vtrim←{⎕IO←0                    ⍝ Trim trailing blanks from line-vector.
+		lf sp←⎕UCS 13 32            ⍝ linefeed and space characters.
+		1↓¯1↓{                      ⍝ without linefeeds brackets,
+			types←lf sp⍳⍵           ⍝ 0:lf, 1:sp, 2:ch.
+			mask←~1 1⍷types         ⍝ mask of non-(duplicate blanks).
+			comp←mask/types         ⍝ ignoring duplicate blanks,
+			csl←2 1 0⍷comp          ⍝ sequence: ch, sp, ··· sp, lf.
+			lsl←0 1 0⍷comp          ⍝ sequence: lf, sp, ··· sp, lf.
+			from←mask\csl∨lsl       ⍝ sequence: xx, sp, ··· sp, lf.
+			upto←1 0⍷types          ⍝ sequence: ··········· sp, lf.
+			(~¯1⌽≠\from∨upto)/⍵     ⍝ compressed out: <sp, ··· sp>, lf.
+		}lf,⍵,lf                    ⍝ bracketed with linefeeds chars.
+	}
+
+	##.vtrim←vtrim
+
+	vtol←{	    	⍝ Nested vector to lines.
+		⍺←⎕UCS 13   ⍝ default separator: new-line.
+		↑,/⍵,¨⊂⍺    ⍝ ⍺-separated vector items.
+	}
+	##.vtol←vtol
+
+
 :EndNamespace
