@@ -99,13 +99,12 @@
     Import←{                            ⍝ Imports tool code into configured namespace
         ⍵<1⌊9=⎕NC NS : 0                ⍝ Skip if alrady done, unless forced
         d←¯1↓⊃1⎕NPARTS ##.SourceFile    ⍝ Find tool installation directory
-        ⎕←'Importing...'                ⍝ //! 
+        ⎕←'Importing into ',(⍕NS),'...' ⍝ Announce workspace modification
         o←⎕NS⍬ ⋄ o.overwrite←1          ⍝ Construct import options
         o ⎕SE.Link.Import NS(d,'/..')   ⍝ Import into configured namespace
     }
 
     SpeedScope←{
-        ⍝ ##.NS.Config.Browser←⍵.browser
         r←##.NS.Graph ⍬
         'SpeedScope implemented! ',⍕⍵
     }
