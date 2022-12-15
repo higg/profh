@@ -1,14 +1,32 @@
 :Namespace Config
 
+    ⍝
+    ⍝ Default configuration settings.
+    ⍝
     Default←⎕NS⍬
-    Default.browser         ←'chrome --new-window'
+    Default.browser         ←'chrome'
     Default.SpeedScopeLoc   ←'file:///c:/dev/dyalog-profiling/lib/speedscope'
 
-    apply←{
-        ⎕THIS.Curr←⎕NS Default
-        Curr.browser←Default.browser ⍵.Switch 'browser'
-        ⍝ x←Curr ##.update ⍵
-        ⍵
+    Curr←Default                        ⍝ Holds configuration used at runtime
+
+    apply←{                             ⍝ Resovles defaults and applies incomings ucmd modifiers into Config.Curr 
+        c←⎕NS Default                   ⍝ Start with default configuration
+        c←applyLocal c                  ⍝ Apply local overrides
+        c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
+        ⎕THIS.Curr←c                    ⍝ Cache in global context
+        ⍵                               ⍝ Return right, for caller's convenience
+    }
+
+    applyLocal←{                        ⍝ Applies local overrides to given NS
+        9≠⎕NC'##.ConfigLocal' : ⍵       ⍝ Abort if none
+        ⍵ ##.update ##.ConfigLocal      ⍝ Apply overrides
+    }
+
+    applyModifiers←{                    ⍝ Applies overriding ucmd modifiers to given namespace
+        f←##.vtrim¨↓⍺.⎕NL⍳9             ⍝ Get field names
+        v←(⍺⍎¨f)⍵.Switch¨f              ⍝ Resolve values
+        x←f ⍺.{⍎⍺,'←⍵'}¨v               ⍝ Apply updates
+        ⍺                               ⍝ Return left, for caller's convenience
     }
 
 :EndNamespace
