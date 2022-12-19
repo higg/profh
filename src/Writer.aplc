@@ -44,9 +44,6 @@
       _maxbufsize←10000
       _leftover←⍬
      
-      :If _file≡''
-          _file←'k:\users\stefano\sofia\profile.collapsedstack.txt'
-      :EndIf
       3 ⎕NDELETE _file
      
       :If _base64
