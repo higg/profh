@@ -75,7 +75,7 @@
     ⍝                       normal template's top-level Help function
     ⍝
 
-    __Example←{
+    _x_Example←{
         ⍵.Run←{' implemented!',⍨Name}
         ⍵.Help←{'help level: ',⍕⍵}
         ⍵
@@ -110,7 +110,6 @@
 
     SpeedScope←{
         r←##.NS.Graph ⍬
-        'SpeedScope implemented! ',⍕⍵
     }
 
 
