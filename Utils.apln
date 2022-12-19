@@ -8,6 +8,15 @@
 	}
 	##.update←update
 
+	updir←{
+		⍺←1                             ⍝ Default to up one level
+        i←⍸'/'=⍵                        ⍝ Indices of separators
+		cp←¯1+(1+⍺⌊≢i)⊃⌽i,≢⍵            ⍝ Choose best cut point, including none
+		cp⌈←⊃i                          ⍝ Keep at least one separator (stay grounded in tree)
+		cp↑⍵                            ⍝ Perform cut
+	}
+	##.updir←updir
+
 
 
 	⍝
