@@ -12,7 +12,7 @@
 
     apply←{                             ⍝ Resovles defaults and applies incomings ucmd modifiers into Config.Curr 
         c←⎕NS Default                   ⍝ Start with default configuration
-        projDir←2 ##.updir srcDir       ⍝ Determine project location
+        projDir←##.updir srcDir         ⍝ Determine project location
         c.libDir←projDir,'/lib'         ⍝ Cache directory contain external tools
         c←applyLocal c                  ⍝ Apply local overrides
         c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
