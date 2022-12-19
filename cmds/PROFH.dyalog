@@ -23,7 +23,7 @@
                                         ⍝ related to system bootstrapping. 
 
     
-    _cmd←{                              ⍝ Builds default command object with given name, group
+    _cmd←{                              ⍝ Builds default ucmd object with given name, group
         r←⎕NS⍬
         nyi←⍵∘{⍺,' not yet implemented'}
         r.(Name Group Parse Desc)←⍵ _grp '' (nyi ⍬)
@@ -89,20 +89,24 @@
     }
 
     _preRunHook←{
-        x←Import 0                      ⍝ Install tool code, if needed
-        ⎕THIS.NS←⍎NS                    ⍝ Resolve tool namespace
+        ⎕THIS.NS←⍎Import 0              ⍝ Import tool code, if needed; resolve namespace
+        NS.Config.srcDir←SrcDir         ⍝ Globally cache installation location
         NS.Config.apply ⍵               ⍝ Apply modifiers to global config
     }
 
     NS←'⎕SE.MMM'                        ⍝ Tool namespace, promoted to reference when loaded //! Make configurable
  
     Import←{                            ⍝ Imports tool code into configured namespace
-        ⍵<1⌊9=⎕NC NS : 0                ⍝ Skip if alrady done, unless forced
-        d←¯1↓⊃1⎕NPARTS ##.SourceFile    ⍝ Find tool installation directory
-        ⎕←'Importing into ',(⍕NS),'...' ⍝ Announce workspace modification
+        ⍵<1⌊9=⎕NC NS : NS               ⍝ Skip if alrady done, unless forced
         o←⎕NS⍬ ⋄ o.overwrite←1          ⍝ Construct import options
-        o ⎕SE.Link.Import NS(d,'/..')   ⍝ Import into configured namespace
+        ⎕←o⎕SE.Link.Import NS SrcDir    ⍝ Import into configured namespace
+        NS
     }
+
+    ∇ r ← SrcDir                        ⍝ Determines directory containing project source
+        r←¯1↓⊃1⎕NPARTS ##.SourceFile    ⍝ Get ucmd source directory
+        r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
+    ∇
 
     SpeedScope←{
         r←##.NS.Graph ⍬

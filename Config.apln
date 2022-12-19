@@ -5,12 +5,15 @@
     ⍝
     Default←⎕NS⍬
     Default.browser         ←'chrome'
-    Default.SpeedScopeLoc   ←'file:///c:/dev/dyalog-profiling/lib/speedscope'
+    Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope)
 
     Curr←Default                        ⍝ Holds configuration used at runtime
+    srcDir←''                           ⍝ Package source directory (assigned later)
 
     apply←{                             ⍝ Resovles defaults and applies incomings ucmd modifiers into Config.Curr 
         c←⎕NS Default                   ⍝ Start with default configuration
+        projDir←2 ##.updir srcDir       ⍝ Determine project location
+        c.libDir←projDir,'/lib'         ⍝ Cache directory contain external tools
         c←applyLocal c                  ⍝ Apply local overrides
         c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
         ⎕THIS.Curr←c                    ⍝ Cache in global context

@@ -32,6 +32,7 @@
  ⍝
  ⍝ Create temporary export file.
  ⍝
+ 3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
  tmpl←TEMP_DIR,'/speedscope_.js'
  tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
  file←⊃0 ⎕NINFO tie
@@ -42,7 +43,7 @@
  ⍝
  ⍝ Launch speedscope in browser.
  ⍝
- arg←Config.Curr.SpeedScopeLoc,'/index.html#localProfilePath=',file
+ arg←'file:///',Config.Curr.libDir,'/speedscope/index.html#localProfilePath=',file
  ⎕CMD'start ',Config.Curr.browser,' ',arg ⍝ //! Make OS agnostic
 
  ⍝ ↓↓↓ Much heuristic, very wow.
