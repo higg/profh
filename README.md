@@ -38,13 +38,11 @@ The examples above install the tool set into the default location for user comma
 
 ### Verifying Installation
 
-Issuing the following user command to the Dyalog interpreter will verify the installation: 
-
-`   ]? profh`
+Issuing `]? profh` to the Dyalog interpreter will verify the installation.
 
 If correctly installed, the interpreter will display the user commands associated with this tool set (including "SpeedScope").
 
-If the interpreter reports "No commands or groups match profh", then the tool set has not been discovered by Dyalog. Note that any previously running interpreter instances may require the `]ureset` user command to be issued in order to recognize the new 
+If the interpreter reports "No commands or groups match profh", then the tool set has not been discovered by Dyalog. Note that any previously running interpreter instances may require the `]ureset` user command to be issued in order to recognize the new command group.
 
 
 
