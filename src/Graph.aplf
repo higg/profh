@@ -1,7 +1,5 @@
- {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;dir;i
+ {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;i
  ⍝ the timings in SpeedScope are displayed in microseconds
- ⍝ dir←Init'' //! Not sure this will be needed, but need hooks to help users
- ⍝ //! remove dir local
 
  ⍝ //! Hoist this, I think
  ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}ctl ⍝ Fetch profile results, unless provided
