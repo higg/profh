@@ -8,7 +8,7 @@
     }
     ##.update←update
 
-    updir←{
+    updir←{                             ⍝ Returns parent of given /-separated directory path
         ⍺←1                             ⍝ Default to up one level
         i←⍸'/'=⍵                        ⍝ Indices of separators
         cp←¯1+(1+⍺⌊≢i)⊃⌽i,≢⍵            ⍝ Choose best cut point, including none
