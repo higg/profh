@@ -1,0 +1,21 @@
+:Namespace Browser
+
+    _launch←{                           ⍝ Launches given URL in given browser
+        ⎕CMD'start ',⍺,' ',⍵ ⍝ //! Make OS agnostic
+    }
+
+    _render←{                           ⍝ Renders given URL in HtmlRenderer
+        'R'⎕WC'HTMLRenderer'('URL'⍵)
+    }
+    
+    ⍝
+    ⍝ Launches given URL (⍵) in configured browser, or in HtmlRenderer if none.
+    ⍝
+    browse←{
+        b←##.Config.Curr.browser        ⍝ Configured browser
+        l←b∘_launch ⋄ r←_render         ⍝ Invocation shorthands
+        f←l{0<≢b: ⍺⍺ ⍵ ⋄ b ⍵⍵ ⍵}r       ⍝ Choose invocation
+        f ⍵                             ⍝ Invoke
+    }
+
+:EndNamespace
