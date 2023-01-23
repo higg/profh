@@ -28,7 +28,8 @@
         nyi←⍵∘{⍺,' not yet implemented'}
         r.(Name Group Parse Desc)←⍵ _grp '' (nyi ⍬)
         r.Run←nyi
-        r.Help←nyi
+        r.Help←{⊃,/HelpText↑⍨⍵+1}       ⍝ Prints from HelpText according to level
+        r.HelpText←⊂⊂nyi ⍬              ⍝ List of string lists (outer list by help level)
         r
     }
 
@@ -83,10 +84,26 @@
 
     __SpeedScope←{
         ⍵.Run←SpeedScope
-        ⍵.Help←{'help level: ',⍕⍵}
-        ⍵.Parse←'-browser='
-        ⍵
+        ⍵.Desc←'Visualize profile data with SpeedScope'
+        ⍵.Parse←'9999S -browser='
+
+        ⍵.HelpText←{                    ⍝ Build help text
+            ⎕IO←0 ⋄ h←2↑⊂⍬
+
+            h[0],←⊂⊂'level 0'           ⍝ //!
+            h[0],←⊂⊂'more level 0'
+
+            h[1],←⊂⊂'level 1'
+            h[1],←⊂⊂'more level 1'
+
+            ⍝ If any <expr> arguments are provided, any previously collected data in ⎕PROFILE's data buffers is purged.
+
+            h
+        }⍬
+
+        ⍵                               ⍝ Return command object
     }
+
 
     _preRunHook←{
         ⎕THIS.NS←⍎Import 0              ⍝ Import tool code, if needed; resolve namespace
@@ -108,9 +125,12 @@
         r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
     ∇
 
-    SpeedScope←{
-        r←##.NS.Graph ⍬
-    }
+    ∇ SpeedScope input
+        e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
+        ⎕←≢e
+        1(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
+        ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
+    ∇
 
 
     ⍝
