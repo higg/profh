@@ -84,20 +84,35 @@
 
     __SpeedScope←{
         ⍵.Run←SpeedScope
-        ⍵.Desc←'Visualize profile data with SpeedScope'
+        ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse←'9999S -browser='
 
-        ⍵.HelpText←{                    ⍝ Build help text
-            ⎕IO←0 ⋄ h←2↑⊂⍬
+        ⍵.HelpText←{
+            ⎕IO←0 ⋄ h←3↑⊂⍬
 
-            h[0],←⊂⊂'level 0'           ⍝ //!
-            h[0],←⊂⊂'more level 0'
-
-            h[1],←⊂⊂'level 1'
-            h[1],←⊂⊂'more level 1'
-
-            ⍝ If any <expr> arguments are provided, any previously collected data in ⎕PROFILE's data buffers is purged.
-
+            h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
+            h[0],←⊂⊂'interactive flame graph visualization tool.'
+            h[0],←⊂⊂''
+            h[0],←⊂⊂'    ]speedscope [<expression> [<expression> ...]] [-browser=<command>]'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
+            h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
+            h[1],←⊂⊂'data is passed to speedscope for visualization. If no expressions are provided,'
+            h[1],←⊂⊂'speedscope is passed the pre-existing contents of ⎕PROFILE''s data buffers, if'
+            h[1],←⊂⊂'any.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'Please note that if any expressions are provided, the previous contents of'
+            h[1],←⊂⊂'⎕PROFILE''s buffers are purged.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-browser=<command>    If present, specifies the command used to launch the'
+            h[1],←⊂⊂'                      browser that will host speedscope, including any command'
+            h[1],←⊂⊂'                      line switches. E.g.: ''chrome --new-window'''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                      If omitted, HtmlRenderer is used.'
+            h[2],←⊂⊂''
+            h[2],←⊂⊂'A stand-alone version of speedscope is distributed with this user command. All'
+            h[2],←⊂⊂'processing is performed client-side (all data remains local; no network access'
+            h[2],←⊂⊂'is required). See https://github.com/jlfwong/speedscope/ for more details.'
             h
         }⍬
 
