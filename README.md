@@ -4,7 +4,7 @@
 Helper tools for Dyalog APL's profiling capabilities (i.e. `⎕PROFILE` and `]PROFILE`).
 
 ## Features
-- Flame/Icicle visual support through integration with SpeedScope //!
+- Flame/Icicle visual support through integration with speedscope //!
 - Line level accounting //!
 
 ---
@@ -16,11 +16,10 @@ Copy the contents of this repository into a directory monitored by Dyalog's user
 ### Example Windows Installation
 
 Issue the following commands using the command prompt:
-<nobr>
-
-`curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output %userprofile%\Documents\myUCMDs\profh.zip` <br>
-`tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Documents\myUCMDs && del %userprofile%\Documents\myUCMDs\profh.zip`
-</nobr>
+```bash
+curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output %userprofile%\Documents\myUCMDs\profh.zip
+tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Documents\myUCMDs && del %userprofile%\Documents\myUCMDs\profh.zip
+```
 
 ### Example Mac or Linux Installation
 

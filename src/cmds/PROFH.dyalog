@@ -82,8 +82,8 @@
         ⍵
     }
 
-    __SpeedScope←{
-        ⍵.Run←SpeedScope
+    __speedscope←{
+        ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse←'9999S -browser='
 
@@ -140,9 +140,8 @@
         r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
     ∇
 
-    ∇ SpeedScope input
+    ∇ speedscope input
         e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
-        ⎕←≢e
         1(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
         ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
     ∇
