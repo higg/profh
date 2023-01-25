@@ -1,7 +1,7 @@
 :Namespace Globals
 
     ##.(⎕IO ⎕ML)←1 1                    ⍝ Ensure language defaults in package NS
-    ##.PKG_NM←'ProfileAdapter'          ⍝ Package name (may be used in file paths)
+    ##.PKG_NM←'PROFH'                   ⍝ Package name (may be used in file paths)
 
     ##.OS←⊃'#'⎕WG'APLVERSION'           ⍝ Host operating system
     ##.IS_WIN←'win'≡⎕C 3↑##.OS          ⍝ Boolean indicating Windows-based OS

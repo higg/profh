@@ -53,4 +53,4 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 
 ## Caveats
 - The initial invocation of the `]speedscope` user command triggers a code import into the `⎕SE.PROFH` namespace, potentially causing a conflict if that namespace is used by the application being profiled.
-- //! Writes and delete temporary files
+- Utilities in this toolkit may create and/or delete files and directories in a system temporary directory suitable for user files (e.g. `c:/users/<username>/AppData/Local/Temp/PROFH` on Windows or `/tmp/PROFH` on other operating systems).
