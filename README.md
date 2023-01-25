@@ -1,11 +1,11 @@
 # profh
 (under construction) //!
 
-Helper tools for Dyalog APL's profiling capabilities (i.e. `⎕PROFILE` and `]PROFILE`).
+Helper tools for enriching Dyalog APL's profiling capabilities (i.e. `⎕PROFILE` and `]PROFILE`).
 
 ## Features
-- Flame/Icicle visual support through integration with speedscope //!
-- Line level accounting //!
+- "Single touch" flame/icicle graph visualization via [speedscope](https://github.com/jlfwong/speedscope)--a third-party, browser-based, interactive tool implemented locally (no network access required). Invoked via a `]speedscope` user command.
+- Line-level reporting. While flame graphs typically roll-up to the function level, APL's conciseness and expressiveness typically means relatively more is happening in a single line of code, and it is therefore advantageous to have a finer-grained view of the profile.
 
 ---
 
@@ -24,12 +24,12 @@ tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Document
 ### Example Mac or Linux Installation
 
 Issue the following commands using the terminal:
-<nobr>
 
-`curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output 
-$HOME/myUCMDs/profh.zip` <br>
-`tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME\Documents\myUCMDs && del $HOME\myUCMDs\profh.zip`
-</nobr>
+```bash
+curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output 
+$HOME/myUCMDs/profh.zip
+tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME\Documents\myUCMDs && del $HOME\myUCMDs\profh.zip
+```
 
 ### Custom Installation 
 
@@ -54,4 +54,3 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 ## Caveats
 - //! Occupies ⎕SE.profh namespace
 - //! Writes and delete temporary files
-- //! SpeedScope is launches in a third party browser, but is entirely local
