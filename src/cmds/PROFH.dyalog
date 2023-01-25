@@ -74,14 +74,10 @@
     ⍝
     ⍝           - Help      Monadic function taking 'level' parameter (⍺) from
     ⍝                       normal template's top-level Help function
+    ⍝                       //! Describe HelpText, default implementation for Help
     ⍝
 
-    _x_Example←{
-        ⍵.Run←{' implemented!',⍨Name}
-        ⍵.Help←{'help level: ',⍕⍵}
-        ⍵
-    }
-
+    
     __speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
