@@ -39,7 +39,7 @@ The examples above install the tool set into the default location for user comma
 
 Issuing `]? profh` to the Dyalog interpreter will verify the installation.
 
-If correctly installed, the interpreter will display the user commands associated with this tool set (including "SpeedScope").
+If correctly installed, the interpreter will display the user commands associated with this tool set (including "speedscope").
 
 If the interpreter reports "No commands or groups match profh", then the tool set has not been discovered by Dyalog. Note that any previously running interpreter instances may require the `]ureset` user command to be issued in order to recognize the new command group.
 
@@ -52,5 +52,5 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 - move from src to /cfg?
 
 ## Caveats
-- //! Occupies ⎕SE.profh namespace
+- The initial invocation of the `]speedscope` user command triggers a code import into the `⎕SE.PROFH` namespace, potentially causing a conflict if that namespace is used by the application being profiled.
 - //! Writes and delete temporary files

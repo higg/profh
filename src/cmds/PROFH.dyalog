@@ -122,7 +122,7 @@
         NS.Config.apply ⍵               ⍝ Apply modifiers to global config
     }
 
-    NS←'⎕SE.MMM'                        ⍝ Tool namespace, promoted to reference when loaded //! Make configurable
+    NS←'⎕SE.PROFH'                      ⍝ Tool namespace, promoted to reference when loaded //~ Make configurable
  
     Import←{                            ⍝ Imports tool code into configured namespace
         ⍵<1⌊9=⎕NC NS : NS               ⍝ Skip if alrady done, unless forced
