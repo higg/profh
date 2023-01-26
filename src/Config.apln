@@ -4,25 +4,34 @@
     ⍝ Default configuration settings.
     ⍝
     Default←⎕NS⍬
-    Default.browser         ←'chrome'
-    Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope)
+    Default.browser         ←''         ⍝ Browser launched for web-based applications (HtmlRenderer if empty)
+    Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
 
     Curr←Default                        ⍝ Holds configuration used at runtime
     srcDir←''                           ⍝ Package source directory (assigned later)
+    CFGL←'ConfigLocal'                  ⍝ Peer namespace containg local default overrides
 
     apply←{                             ⍝ Resovles defaults and applies incomings ucmd modifiers into Config.Curr 
         c←⎕NS Default                   ⍝ Start with default configuration
         projDir←##.updir srcDir         ⍝ Determine project location
         c.libDir←projDir,'/lib'         ⍝ Cache directory containing external tools
-        c←applyLocal c                  ⍝ Apply local overrides
+        x←importLocal projDir           ⍝ Fetch local overrides, if any
+        c←applyLocal c                  ⍝ Apply local overrides, if any
         c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
         ⎕THIS.Curr←c                    ⍝ Cache in global context
         ⍵                               ⍝ Return right, for caller's convenience
     }
 
     applyLocal←{                        ⍝ Applies local overrides to given NS
-        9≠⎕NC'##.ConfigLocal' : ⍵       ⍝ Abort if none
+        9≠⎕NC'##.',CFGL : ⍵             ⍝ Abort if none
         ⍵ ##.update ##.ConfigLocal      ⍝ Apply overrides
+    }
+
+    importLocal←{                       ⍝ Import local overrides to defaults, if any
+        n←⍵,'-cfg/',CFGL,'.apln'        ⍝ File name of local overrides
+        f←⎕SE.Link.Import⍣(⎕NEXISTS n)  ⍝ Determine if file exists, plan to import if so
+        o←⎕NS⍬ ⋄ o.overwrite←1          ⍝ Construct import options
+        o f(⍕##)n                       ⍝ Perform the import, if appropriate
     }
 
     applyModifiers←{                    ⍝ Applies overriding ucmd modifiers to given namespace

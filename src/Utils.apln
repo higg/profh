@@ -3,6 +3,7 @@
 
     update←{                            ⍝ Updates intersecting fields from dict ⍵ to ⍺
         i←⊃∩/{vtrim¨↓⍵.⎕NL⍳9}¨⍺ ⍵       ⍝ Find intersecting fields
+        0=≢i: ⍺                         ⍝ Abort if no updates to be made
         x←⍺⍎¨'←⍵.'∘{⍵,⍺,⍵}¨i            ⍝ Perform update
         ⍺                               ⍝ Return modified NS ref, for convenience
     }
