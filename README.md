@@ -16,7 +16,7 @@ Copy the contents of this repository into a directory monitored by Dyalog's user
 ### Example Windows Installation
 
 Issue the following commands using the command prompt:
-```bash
+```cmd
 curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output %userprofile%\Documents\myUCMDs\profh.zip
 tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Documents\myUCMDs && del %userprofile%\Documents\myUCMDs\profh.zip
 ```
@@ -28,7 +28,7 @@ Issue the following commands using the terminal:
 ```bash
 curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output 
 $HOME/myUCMDs/profh.zip
-tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME\Documents\myUCMDs && del $HOME\myUCMDs\profh.zip
+tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME/myUCMDs && del $HOME/myUCMDs/profh.zip
 ```
 
 ### Custom Installation 
@@ -47,9 +47,17 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 
 ## Configuration
 
-//!
-- config.local
-- move from src to /cfg?
+When launching web-based applications, the default browser used by this toolkit is Dyalog's built-in HtmlRenderer. This can be overridden by use of a `browser=<command>` modifier when issuing user commands (see `]?? speedscope` for more details).
+
+To permanently configure a different browser to be the default, follow the following steps:
+- Create a new directory that is a peer to the project installation directory with a suffix of "-cfg" (e.g. `%userprofile%\Documents\myUCMDs\profh-cfg` or `$HOME/myUCMDs/profh-cfg`)
+- Within that directory, create a file called `ConfigLocal.apln`
+- In that file, define an APL namespace with a `browser` entry, whose value is the command used to launch the desired browser, including any command line switches. For example:
+```apl
+:Namespace ConfigLocal
+    browser ← 'chrome --new-window'
+:EndNamespace
+```
 
 ## Caveats
 - The initial invocation of the `]speedscope` user command triggers a code import into the `⎕SE.PROFH` namespace, potentially causing a conflict if that namespace is used by the application being profiled.
