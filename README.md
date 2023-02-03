@@ -27,7 +27,7 @@ Issue the following commands using the terminal:
 
 ```bash
 curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output $HOME/myUCMDs/profh.zip
-tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME/myUCMDs && del $HOME/myUCMDs/profh.zip
+tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME/myUCMDs && rm $HOME/myUCMDs/profh.zip
 ```
 
 ### Custom Installation 
