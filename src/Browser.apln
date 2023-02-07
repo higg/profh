@@ -1,8 +1,7 @@
 :Namespace Browser
 
     _launch←{                           ⍝ Launches given URL (⍵) in given browser (⍺)
-        ls←_launchStr ⍺                 ⍝ Find launch string
-        ⎕CMD ls,' ',⍵                   ⍝ Launch with URL
+        ⎕CMD ⍺ _launchStr ⍵             ⍝ Compose launch string, invoke
     }
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
@@ -23,23 +22,28 @@
     _os←'win' 'lin' 'mac'               ⍝ Supported operating systems
     _browsers←'chrome' 'firefox' 'msedge' 'safari'   ⍝ Supported browsers
 
-    _genLaunchStrings←{                 ⍝ Generates launch strings for supported os/browser combos
+    _genExecNames←{                     ⍝ Generates executable names for supported os/browser combos
         sai←_browsers⍳⊂'safari'         ⍝ Safari's index (it's a tad different)
+        wi li mi←_os⍳'win' 'lin' 'mac'  ⍝ OS indices
 
+        ⍝
+        ⍝ Support matrix.
+        ⍝
         supp←1⍴⍨≢¨_os _browsers         ⍝ Build os/browser support matrix (assume full coverage)
         supp[(_os≢¨⊂'mac')/⍳≢_os;sai]←0 ⍝ Safari is Mac only
         supp[_os⍳⊂'mac';sai]←0          ⍝ And we don't support it yet!
 
         ⍝
-        ⍝ Build launch strings.
+        ⍝ Build executable names, including path where needed (i.e. MacOS).
         ⍝
         r←(⍴supp)⍴⊂''                   ⍝ Initialize with empty strings
 
         ⍝
-        ⍝ On Windows, we'll use "start" to launch a browser. Our choice of
-        ⍝ browser names aligns with application names on Windows.
+        ⍝ On Windows, we'll use "start" to launch a browser (using start frees
+        ⍝ up the caller). Our choice of browser names aligns with application
+        ⍝ names on Windows.
         ⍝
-        r[_os⍳⊂'win';]←_browsers,¨⍨⊂'start '
+        r[wi;]←_browsers
 
         ⍝
         ⍝ On Mac, we don't use "open" to launch the browsers since it annoyingly
@@ -52,33 +56,47 @@
         ⍝ We assume each is installed in the default location for system
         ⍝ applications (an assumption we'll probably regret).
         ⍝
-        m←0 3⍴'' ⍝ Matrix matching browser to App name/executable strings
+        m←0 3⍴''                        ⍝ Browser/app/executable names
         m⍪←'chrome'  'Google\ Chrome'  'Google\ Chrome'
-        m⍪←'firefox' 'Firefox'        'firefox'
+        m⍪←'firefox' 'Firefox'         'firefox'
         ⍝ //! Safari (doesn't seem to eat URL parameter, may need AppleScript), or just show URL
         ⍝ //! MS Edge
 
         p←'/Applications/' '.app/Contents/MacOS/'   ⍝ Prefixes to launch string components
         s←,/p(,¨⍤1)1↓[2]m               ⍝ Assemble launch strings
-        r[_os⍳⊂'mac';_browsers⍳m[;1]]←s ⍝ Put them in their place
+        r[mi;_browsers⍳m[;1]]←s         ⍝ Put them in their place
+
+        ⍝
+        ⍝ On linux, we expect the browser executables to be on the path. 
+        ⍝
+        m←0 2⍴''                        ⍝ Browser/executable names
+        m⍪←'chrome'     'google-chrome'
+        m⍪←'firefox'    'firefox'
+        m⍪←'msedge'     'microsoft-edge'
+
+        r[li;_browsers⍳m[;1]]←m[;2]     ⍝ Put them in their place
 
         r[⍸~supp]←⊂''                   ⍝ Clear any explicitly unsupported
         r
     }
 
-    _launchStrs←_genLaunchStrings⍬
+    _execNames←_genExecNames⍬
 
-    _launchStr←{                        ⍝ Finds launch string for given browser (⍵)
-        oi←_os⍳⊂⎕C 3↑##.OS              ⍝ Find OS index
-        bi←(b←_browsers)⍳⊂⍵             ⍝ Find browser index
+    _launchStr←{                        ⍝ Builds launch string for given browser (⍺) and URL (⍵)
+        oi←_os⍳⊂os←⎕C 3↑##.OS           ⍝ Find OS index
+        w←os≡'win'                      ⍝ Determine if we're in Windows
+        bi←(b←_browsers)⍳⊂⍺             ⍝ Find browser index
+        aon←{⊃(⍺+1)⌷''⍵}                ⍝ Returns all or none of string ⍵, based on bool ⍺
 
-        bi>≢b   : 999⎕SIGNAL⍨'Browser "',⍵,'" not supported'
+        bi>≢b   : 999⎕SIGNAL⍨'Browser "',⍺,'" not supported'
         oi>≢_os : 998⎕SIGNAL⍨'OS "', ##.OS,'" not supported'
 
-        r←⊃_launchStrs[oi;bi]           ⍝ Find launch string
+        e←⊃_execNames[oi;bi]           ⍝ Find executable name
 
-        0=≢r    : 997⎕SIGNAL⍨'Browser "',⍵,'" not currently supported'
-        r
+        0=≢e    : 997⎕SIGNAL⍨'Browser "',⍺,'" not currently supported'
+
+        r←e,' ',⍵                       ⍝ Combine executable and URL
+        (w aon'start '),r,(~w)aon' &'   ⍝ Set as background task, according to OS
     }
 
 :EndNamespace
