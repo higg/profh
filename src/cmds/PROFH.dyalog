@@ -81,7 +81,7 @@
     __speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
-        ⍵.Parse←'9999S -browser='
+        ⍵.Parse←'9999S -browser=<chrome> <firefox> <msedge>'
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -89,7 +89,7 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
             h[0],←⊂⊂'interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'    ]speedscope [<expression> [<expression> ...]] [-browser=<command>]'
+            h[0],←⊂⊂'    ]speedscope [<expression> [<expression> ...]] [-browser={chrome|firefox|msedge}]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -100,11 +100,11 @@
             h[1],←⊂⊂'Please note that if any expressions are provided, the previous contents of'
             h[1],←⊂⊂'⎕PROFILE''s buffers are purged.'
             h[1],←⊂⊂''
-            h[1],←⊂⊂'-browser=<command>    If present, specifies the command used to launch the'
-            h[1],←⊂⊂'                      browser that will host speedscope, including any command'
-            h[1],←⊂⊂'                      line switches. E.g.: ''chrome --new-window'''
+            h[1],←⊂⊂'-browser=<value>   If present, specifies the browser used to host speedscope.'
+            h[1],←⊂⊂'                   Currently, the only supported values are "chrome" "firefox"'
+            h[1],←⊂⊂'                   and "msedge".'
             h[1],←⊂⊂''
-            h[1],←⊂⊂'                      If omitted, HtmlRenderer is used.'
+            h[1],←⊂⊂'                   If omitted, HtmlRenderer is used.'
             h[2],←⊂⊂''
             h[2],←⊂⊂'A stand-alone version of speedscope is distributed with this user command. All'
             h[2],←⊂⊂'processing is performed client-side (all data remains local; no network access'

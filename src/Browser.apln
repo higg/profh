@@ -1,7 +1,8 @@
 :Namespace Browser
 
-    _launch←{                           ⍝ Launches given URL in given browser
-        ⎕CMD'start ',⍺,' ',⍵ ⍝ //! Make OS agnostic
+    _launch←{                           ⍝ Launches given URL (⍵) in given browser (⍺)
+        ls←_launchStr ⍺                 ⍝ Find launch string
+        ⎕CMD ls,' ',⍵                   ⍝ Launch with URL
     }
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
@@ -16,6 +17,68 @@
         l←b∘_launch ⋄ r←_render         ⍝ Invocation shorthands
         f←l{0<≢b: ⍺⍺ ⍵ ⋄ b ⍵⍵ ⍵}r       ⍝ Choose invocation
         f ⍵                             ⍝ Invoke
+    }
+
+    _launchStrs←⍬                       ⍝ Matrix of launch strings (os×browser)
+    _os←'win' 'lin' 'mac'               ⍝ Supported operating systems
+    _browsers←'chrome' 'firefox' 'msedge' 'safari'   ⍝ Supported browsers
+
+    _genLaunchStrings←{                 ⍝ Generates launch strings for supported os/browser combos
+        sai←_browsers⍳⊂'safari'         ⍝ Safari's index (it's a tad different)
+
+        supp←1⍴⍨≢¨_os _browsers         ⍝ Build os/browser support matrix (assume full coverage)
+        supp[(_os≢¨⊂'mac')/⍳≢_os;sai]←0 ⍝ Safari is Mac only
+        supp[_os⍳⊂'mac';sai]←0          ⍝ And we don't support it yet!
+
+        ⍝
+        ⍝ Build launch strings.
+        ⍝
+        r←(⍴supp)⍴⊂''                   ⍝ Initialize with empty strings
+
+        ⍝
+        ⍝ On Windows, we'll use "start" to launch a browser. Our choice of
+        ⍝ browser names aligns with application names on Windows.
+        ⍝
+        r[_os⍳⊂'win';]←_browsers,¨⍨⊂'start '
+
+        ⍝
+        ⍝ On Mac, we don't use "open" to launch the browsers since it annoyingly
+        ⍝ strips hash-params baked into the URL.
+        ⍝
+        ⍝ Instead, we invoke the browser program directly. In order to this, we
+        ⍝ hard-code the application name and executable names associated with
+        ⍝ supported browers.
+        ⍝
+        ⍝ We assume each is installed in the default location for system
+        ⍝ applications (an assumption we'll probably regret).
+        ⍝
+        m←0 3⍴'' ⍝ Matrix matching browser to App name/executable strings
+        m⍪←'chrome'  'Google\ Chrome'  'Google\ Chrome'
+        m⍪←'firefox' 'Firefox'        'firefox'
+        ⍝ //! Safari (doesn't seem to eat URL parameter, may need AppleScript), or just show URL
+        ⍝ //! MS Edge
+
+        p←'/Applications/' '.app/Contents/MacOS/'   ⍝ Prefixes to launch string components
+        s←,/p(,¨⍤1)1↓[2]m               ⍝ Assemble launch strings
+        r[_os⍳⊂'mac';_browsers⍳m[;1]]←s ⍝ Put them in their place
+
+        r[⍸~supp]←⊂''                   ⍝ Clear any explicitly unsupported
+        r
+    }
+
+    _launchStrs←_genLaunchStrings⍬
+
+    _launchStr←{                        ⍝ Finds launch string for given browser (⍵)
+        oi←_os⍳⊂⎕C 3↑##.OS              ⍝ Find OS index
+        bi←(b←_browsers)⍳⊂⍵             ⍝ Find browser index
+
+        bi>≢b   : 999⎕SIGNAL⍨'Browser "',⍵,'" not supported'
+        oi>≢_os : 998⎕SIGNAL⍨'OS "', ##.OS,'" not supported'
+
+        r←⊃_launchStrs[oi;bi]           ⍝ Find launch string
+
+        0=≢r    : 997⎕SIGNAL⍨'Browser "',⍵,'" not currently supported'
+        r
     }
 
 :EndNamespace

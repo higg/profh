@@ -46,15 +46,15 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 
 ## Configuration
 
-When launching web-based applications, the default browser used by this toolkit is Dyalog's built-in HtmlRenderer. This can be overridden by use of a `browser=<command>` modifier when issuing user commands (see `]?? speedscope` for more details).
+When launching web-based applications, the default browser used by this toolkit is Dyalog's built-in HtmlRenderer. This can be overridden by use of a `browser=<value>` modifier when issuing user commands (see `]?? speedscope` for more details).
 
 To permanently configure a different browser to be the default, follow the following steps:
 - Create a new directory that is a peer to the project installation directory with a suffix of "-cfg" (e.g. `%userprofile%\Documents\myUCMDs\profh-cfg` or `$HOME/myUCMDs/profh-cfg`)
 - Within that directory, create a file called `ConfigLocal.apln`
-- In that file, define an APL namespace with a `browser` entry, whose value is the command used to launch the desired browser, including any command line switches. For example:
+- In that file, define an APL namespace with a `browser` entry, and set it to a string representing the value that would be passed to the `browser` command modifier.
 ```apl
 :Namespace ConfigLocal
-    browser ← 'chrome --new-window'
+    browser ← 'chrome'
 :EndNamespace
 ```
 

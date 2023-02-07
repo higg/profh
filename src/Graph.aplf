@@ -42,8 +42,6 @@
  ⍝ Launch speedscope in browser.
  ⍝
  arg←'file:///',Config.Curr.libDir,'/speedscope/index.html#localProfilePath=',file
- ⍝ //! ⎕CMD'start ',Config.Curr.browser,' ',arg ⍝ //! Make OS agnostic
- ⍝ 'R' ⎕WC 'HTMLRenderer' ('URL' arg)
  Browser.browse arg
 
  ⍝ ↓↓↓ Much heuristic, very wow.
