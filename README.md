@@ -18,7 +18,7 @@ Copy the contents of this repository into a directory monitored by Dyalog's user
 Issue the following commands using the command prompt:
 ```cmd
 curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output %userprofile%\Documents\myUCMDs\profh.zip
-tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Documents\myUCMDs && del %userprofile%\Documents\myUCMDs\profh.zip
+tar -x -f %userprofile%\Documents\MyUCMDs\profh.zip -m -C %userprofile%\Documents\MyUCMDs && del %userprofile%\Documents\MyUCMDs\profh.zip
 ```
 
 ### Example Mac or Linux Installation
@@ -26,8 +26,8 @@ tar -x -f %userprofile%\Documents\myUCMDs\profh.zip -m -C %userprofile%\Document
 Issue the following commands using the terminal:
 
 ```bash
-curl -L https://github.com/higg/profh/archive/main.zip --create-dirs --output $HOME/myUCMDs/profh.zip
-tar -x -f $HOME/myUCMDs/profh.zip -m -C $HOME/myUCMDs && rm $HOME/myUCMDs/profh.zip
+curl -L https://github.com/higg/profh/archive/main.tar.gz --create-dirs --output $HOME/MyUCMDs/profh.tar.gz
+tar -x -f $HOME/MyUCMDs/profh.tar.gz -m -C $HOME/MyUCMDs && rm $HOME/myUCMDs/profh.tar.gz
 ```
 
 ### Custom Installation 
