@@ -81,7 +81,7 @@
     __speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
-        ⍵.Parse←'9999S -browser=chrome firefox msedge'
+        ⍵.Parse←'9999S -browser=chrome firefox edge'
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -89,7 +89,7 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
             h[0],←⊂⊂'interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|msedge}]'
+            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -104,7 +104,7 @@
             h[1],←⊂⊂''
             h[1],←⊂⊂'-browser=<value>   If present, specifies the browser used to host speedscope.'
             h[1],←⊂⊂'                   Currently, the only supported values are "chrome" "firefox"'
-            h[1],←⊂⊂'                   and "msedge".'
+            h[1],←⊂⊂'                   and "edge".'
             h[1],←⊂⊂''
             h[1],←⊂⊂'                   If omitted, HtmlRenderer is used.'
             h[2],←⊂⊂''

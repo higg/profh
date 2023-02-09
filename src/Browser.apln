@@ -1,13 +1,5 @@
 :Namespace Browser
 
-    _launch←{                           ⍝ Launches given URL (⍵) in given browser (⍺)
-        ⎕CMD ⍺ _launchStr ⍵             ⍝ Compose launch string, invoke
-    }
-
-    _render←{                           ⍝ Renders given URL in HtmlRenderer
-        'R'⎕WC'HTMLRenderer'('URL'⍵)
-    }
-    
     ⍝
     ⍝ Launches given URL (⍵) in configured browser, or in HtmlRenderer if none.
     ⍝
@@ -18,85 +10,81 @@
         f ⍵                             ⍝ Invoke
     }
 
-    _launchStrs←⍬                       ⍝ Matrix of launch strings (os×browser)
-    _os←'win' 'lin' 'mac'               ⍝ Supported operating systems
-    _browsers←'chrome' 'firefox' 'msedge' 'safari'   ⍝ Supported browsers
-
-    _genExecNames←{                     ⍝ Generates executable names for supported os/browser combos
-        sai←_browsers⍳⊂'safari'         ⍝ Safari's index (it's a tad different)
-        wi li mi←_os⍳'win' 'lin' 'mac'  ⍝ OS indices
-
-        ⍝
-        ⍝ Support matrix.
-        ⍝
-        supp←1⍴⍨≢¨_os _browsers         ⍝ Build os/browser support matrix (assume full coverage)
-        supp[(_os≢¨⊂'mac')/⍳≢_os;sai]←0 ⍝ Safari is Mac only
-        supp[_os⍳⊂'mac';sai]←0          ⍝ And we don't support it yet!
-
-        ⍝
-        ⍝ Build executable names, including path where needed (i.e. MacOS).
-        ⍝
-        r←(⍴supp)⍴⊂''                   ⍝ Initialize with empty strings
-
-        ⍝
-        ⍝ On Windows, we'll use "start" to launch a browser (using start frees
-        ⍝ up the caller). Our choice of browser names aligns with application
-        ⍝ names on Windows.
-        ⍝
-        r[wi;]←_browsers
-
-        ⍝
-        ⍝ On Mac, we don't use "open" to launch the browsers since it annoyingly
-        ⍝ strips hash-params baked into the URL.
-        ⍝
-        ⍝ Instead, we invoke the browser program directly. In order to this, we
-        ⍝ hard-code the application name and executable names associated with
-        ⍝ supported browers.
-        ⍝
-        ⍝ We assume each is installed in the default location for system
-        ⍝ applications (an assumption we'll probably regret).
-        ⍝
-        m←0 3⍴''                        ⍝ Browser/app/executable names
-        m⍪←'chrome'  'Google\ Chrome'  'Google\ Chrome'
-        m⍪←'firefox' 'Firefox'         'firefox'
-        ⍝ //! Safari (doesn't seem to eat URL parameter, may need AppleScript), or just show URL
-        ⍝ //! MS Edge
-
-        p←'/Applications/' '.app/Contents/MacOS/'   ⍝ Prefixes to launch string components
-        s←,/p(,¨⍤1)1↓[2]m               ⍝ Assemble launch strings
-        r[mi;_browsers⍳m[;1]]←s         ⍝ Put them in their place
-
-        ⍝
-        ⍝ On linux, we expect the browser executables to be on the path. 
-        ⍝
-        m←0 2⍴''                        ⍝ Browser/executable names
-        m⍪←'chrome'     'google-chrome'
-        m⍪←'firefox'    'firefox'
-        m⍪←'msedge'     'microsoft-edge'
-
-        r[li;_browsers⍳m[;1]]←m[;2]     ⍝ Put them in their place
-
-        r[⍸~supp]←⊂''                   ⍝ Clear any explicitly unsupported
-        r
+    _render←{                           ⍝ Renders given URL in HtmlRenderer
+        'R'⎕WC'HTMLRenderer'('URL'⍵)
     }
 
-    _execNames←_genExecNames⍬
+    ⍝
+    ⍝ Builds launch string for given URL (⍵) and browser (⍺).
+    ⍝
+    _launchStr←{
+        b←_browsers                     ⍝ Shorthand
+        b/⍨←(2⌷b)≡¨⊂⎕C 3↑##.OS          ⍝ Filter to local OS
+        bi←(1⌷b)⍳⊂⍺                     ⍝ Find browser index
+        
+        bi>⊃⌽⍴b : 999⎕SIGNAL⍨'Browser "',⍺,'" not supported'
 
-    _launchStr←{                        ⍝ Builds launch string for given browser (⍺) and URL (⍵)
-        oi←_os⍳⊂os←⎕C 3↑##.OS           ⍝ Find OS index
-        w←os≡'win'                      ⍝ Determine if we're in Windows
-        bi←(b←_browsers)⍳⊂⍺             ⍝ Find browser index
-        aon←{⊃(⍺+1)⌷''⍵}                ⍝ Returns all or none of string ⍵, based on bool ⍺
-
-        bi>≢b   : 999⎕SIGNAL⍨'Browser "',⍺,'" not supported'
-        oi>≢_os : 998⎕SIGNAL⍨'OS "', ##.OS,'" not supported'
-
-        e←⊃_execNames[oi;bi]           ⍝ Find executable name
-
-        0=≢e    : 997⎕SIGNAL⍨'Browser "',⍺,'" not currently supported'
-
-        r←e,' ',⍵                       ⍝ Combine executable and URL
-        (w aon'start '),r,(~w)aon' &'   ⍝ Set as background task, according to OS
+        f←{⊃,/⍵ bi⌷b}                   ⍝ Plucks and fuses cells from browser row
+        ##.vtrim (f 5 4),' ',⍵,' ',f 6  ⍝ Build command from prefix/executable/url/suffix
     }
+
+    _launch←⎕CMD⍤_launchStr             ⍝ Launches given URL (⍵) in given browser (⍺)
+
+    ⍝
+    ⍝ Initializes module, in particular building OS-specific 
+    ⍝ 
+    _buildBrowserDetails←{
+        ⍝
+        ⍝ Build table of OS-sepecific launch prefix/suffix strings.
+        ⍝
+        ⍝ Note that prefix/suffix strings have trailing/leading space,
+        ⍝ respectively.
+        ⍝
+
+        ⍝       os      prefix      suffix
+        o←⍪     'win'   'start '    ''
+        o,←     'mac'   ''          ''
+        o,←     'lin'   ''          ' </dev/null >/dev/null 2>&1 &'
+
+        ⍝
+        ⍝ Build table of Browser/OS-specific details.
+        ⍝
+        ⍝ Note that special characters are escaped for OS shell.
+        ⍝
+
+        ⍝       browser     os      appName             execName
+        ⍝       -------     --      -------             --------
+        b←⍪     'chrome'    'win'   ''                  'chrome'
+        b,←     'chrome'    'mac'   'Google\ Chrome'    'Google\ Chrome'
+        b,←     'chrome'    'lin'   ''                  'google-chrome'
+
+        b,←     'firefox'   'win'   ''                  'firefox'
+        b,←     'firefox'   'mac'   'Firefox'           'firefox'
+        b,←     'firefox'   'lin'   ''                  'firefox'
+
+        b,←     'edge'      'win'   ''                  'msedge'
+        b,←     'edge'      'mac'   'Microsoft\ Edge'   'Microsoft\ Edge'
+        b,←     'edge'      'lin'   ''                  'microsoft-edge'
+
+        b⍪←o[2 3;((1⌷o)⍳2⌷b)]           ⍝ Join OS and browser details
+
+        ⍝
+        ⍝ MacOS requires special handling.
+        ⍝
+        ⍝ We can't use "open" to launch the browsers since it annoyingly strips
+        ⍝ hash-params baked into the URL.
+        ⍝
+        ⍝ Instead, we invoke the browser program directly. In order to do this,
+        ⍝ we compose the fully-qualified path to the browser executable. We
+        ⍝ assume each is installed in the default location for system
+        ⍝ applications (an assumption we'll probably regret one day).
+        mi←⍸(2⌷b)≡¨⊂'mac'               ⍝ Find MacOS entries
+        p←(⊂'/App/'),¨(3 mi⌷b),¨⊂'.app/Contents/MacOS/' ⍝ Build paths
+        b[4;mi],⍨←p                     ⍝ Prepend paths to executable names
+
+        b                               ⍝ Return browser details
+    }
+
+    _browsers←_buildBrowserDetails ⍬    ⍝ Browser launch details (see above)
 
 :EndNamespace
