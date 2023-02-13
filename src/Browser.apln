@@ -21,7 +21,7 @@
         b←_browsers                     ⍝ Shorthand
         b/⍨←(2⌷b)≡¨⊂⎕C 3↑##.OS          ⍝ Filter to local OS
         bi←(1⌷b)⍳⊂⍺                     ⍝ Find browser index
-        
+
         bi>⊃⌽⍴b : 999⎕SIGNAL⍨'Browser "',⍺,'" not supported'
 
         f←{⊃,/⍵ bi⌷b}                   ⍝ Plucks and fuses cells from browser row
@@ -32,7 +32,7 @@
 
     ⍝
     ⍝ Initializes module, in particular building OS-specific 
-    ⍝ 
+    ⍝
     _buildBrowserDetails←{
         ⍝
         ⍝ Build table of OS-sepecific launch prefix/suffix strings.
@@ -43,7 +43,7 @@
 
         ⍝       os      prefix      suffix
         o←⍪     'win'   'start '    ''
-        o,←     'mac'   ''          ''
+        o,←     'mac'   ''          ' </dev/null >/dev/null 2>&1 &'
         o,←     'lin'   ''          ' </dev/null >/dev/null 2>&1 &'
 
         ⍝
@@ -78,8 +78,9 @@
         ⍝ we compose the fully-qualified path to the browser executable. We
         ⍝ assume each is installed in the default location for system
         ⍝ applications (an assumption we'll probably regret one day).
+        ⍝
         mi←⍸(2⌷b)≡¨⊂'mac'               ⍝ Find MacOS entries
-        p←(⊂'/App/'),¨(3 mi⌷b),¨⊂'.app/Contents/MacOS/' ⍝ Build paths
+        p←(⊂'/Applications/'),¨(3 mi⌷b),¨⊂'.app/Contents/MacOS/' ⍝ Build paths
         b[4;mi],⍨←p                     ⍝ Prepend paths to executable names
 
         b                               ⍝ Return browser details
