@@ -1,4 +1,4 @@
- {ctl}←{fnname}Graph ctl;file;tie;tmpl;arg;md;ix;i
+ {ctl}←{fnname}Graph ctl;file;tie;arg;md;ix;i
  ⍝ the timings in SpeedScope are displayed in microseconds
 
  ⍝ //! Hoist this, I think
@@ -31,12 +31,12 @@
  ⍝ Create temporary export file.
  ⍝
  3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
- tmpl←TEMP_DIR,'/speedscope_.js'
- tie←tmpl ⎕NCREATE ⎕OPT'Unique' 1⊢0
- file←⊃0 ⎕NINFO tie
+ file←TEMP_DIR,'/speedscope_.js'        ⍝ Determine temporary file location and rootname
+ tie←file(⎕NCREATE ⎕OPT'Unique' 1)0     ⍝ Create file, appending random chars to filename
+ file←⊃0 ⎕NINFO tie                     ⍝ Pick up randomized filename
  ⎕NUNTIE tie
 
- file 1 md SpeedScope ctl ⍝ Perform export
+ file 1 md SpeedScope ctl               ⍝ Perform export
 
  ⍝
  ⍝ Launch speedscope in browser.
@@ -44,6 +44,11 @@
  arg←'file:///',Config.Curr.libDir,'/speedscope/index.html#localProfilePath=',file
  Browser.browse arg
 
- ⍝ ↓↓↓ Much heuristic, very wow.
- ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
- 3 ⎕NDELETE file ⍝ Delete export file
+ ⍝
+ ⍝ Delete temporary export file, unless requested otherwise.
+ ⍝
+ :If ~Config.Curr.keepTemp
+    ⍝ ↓↓↓ Much heuristic, very wow.
+    ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
+    3 ⎕NDELETE file ⍝ Delete export file
+ :EndIf
