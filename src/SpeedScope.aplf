@@ -59,7 +59,7 @@
          (⊃stk)←f,(¯1≠l)/'[',(⍕l),']'
      :EndIf
      :If sp>0
-     :AndIf _out.Write sp fmt stk
+     :AndIf _out.Write sp fmt stk       ⍝ Write partial
          ⍞←'○'
      :EndIf
      ld←d
