@@ -1,5 +1,4 @@
 # profh
-(under construction) //!
 
 Helper tools for enriching Dyalog APL's profiling capabilities (i.e. `⎕PROFILE` and `]PROFILE`).
 
