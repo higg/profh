@@ -28,10 +28,16 @@
         ##.vtrim (f 5 4),' ',⍵,' ',f 6  ⍝ Build command from prefix/executable/url/suffix
     }
 
-    _launch←⎕CMD⍤_launchStr             ⍝ Launches given URL (⍵) in given browser (⍺)
+    _launch←{                           ⍝ Launches given URL (⍵) in given browser (⍺)
+        s←##.Config.Curr.showCmd        ⍝ Command display setting (undocumented switch)
+        f←⎕CMD∘{s: ⎕←⍵ ⋄ ⍵}             ⍝ Glue command execution to optional command display
+        f ⍺ _launchStr ⍵                ⍝ Compose lauch string, launch 
+    }
+
 
     ⍝
-    ⍝ Initializes module, in particular building OS-specific 
+    ⍝ Builds matrix of details required for launching supported browsers under
+    ⍝ supported operating systems.
     ⍝
     _buildBrowserDetails←{
         ⍝

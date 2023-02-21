@@ -81,7 +81,7 @@
     __speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
-        ⍵.Parse←'9999S -browser=chrome firefox edge -keepTemp'
+        ⍵.Parse←'9999S -browser=chrome firefox edge -keepTemp -showCmd'
         ⍝ //! Document -keepTemp (if keeping)
 
         ⍵.HelpText←{
