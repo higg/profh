@@ -2,7 +2,7 @@
     ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
 
     update←{                            ⍝ Updates intersecting fields from dict ⍵ to ⍺
-        i←⊃∩/{vtrim¨↓⍵.⎕NL⍳9}¨⍺ ⍵       ⍝ Find intersecting fields
+        i←⊃∩/{keys ⍵}¨⍺ ⍵               ⍝ Find intersecting fields
         0=≢i: ⍺                         ⍝ Abort if no updates to be made
         x←⍺⍎¨'←⍵.'∘{⍵,⍺,⍵}¨i            ⍝ Perform update
         ⍺                               ⍝ Return modified NS ref, for convenience
@@ -18,7 +18,8 @@
     }
     ##.updir←updir
 
-
+    keys←{⍺←⍳9 ⋄ vtrim¨↓⍵.⎕NL⍺}         ⍝ Returns names in given namespace (⍵) of given class (⍺) if provided, else all
+    ##.keys←keys
 
     ⍝
     ⍝ --- Lifted from dfns workspace ------------------------------------------
