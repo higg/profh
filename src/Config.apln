@@ -8,6 +8,7 @@
     Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
     Default.keepTemp        ←0          ⍝ Indicates if temporary files should be kept rather than deleted
     Default.showCmd         ←0          ⍝ If set, displays external command before execution
+    Default.zoom            ←0          ⍝ HtmlRenderer zoom level
 
     Curr←Default                        ⍝ Holds configuration used at runtime
     srcDir←''                           ⍝ Package source directory (assigned later)
@@ -37,7 +38,7 @@
     }
 
     applyModifiers←{                    ⍝ Applies overriding ucmd modifiers to given namespace
-        f←##.vtrim¨↓⍺.⎕NL⍳9             ⍝ Get field names
+        f←##.keys ⍺                     ⍝ Get field names
         v←(⍺⍎¨f)⍵.Switch¨f              ⍝ Resolve values
         x←f ⍺.{⍎⍺,'←⍵'}¨v               ⍝ Apply updates
         ⍺                               ⍝ Return left, for caller's convenience

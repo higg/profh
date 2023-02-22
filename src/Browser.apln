@@ -1,17 +1,31 @@
 :Namespace Browser
 
+    _zoomOffset←0                       ⍝ Session offset from configured HtmlRenderer zoom level
+
     ⍝
     ⍝ Launches given URL (⍵) in configured browser, or in HtmlRenderer if none.
     ⍝
     browse←{
-        b←##.Config.Curr.browser        ⍝ Configured browser
+        b←_cfg.browser                  ⍝ Configured browser
         l←b∘_launch ⋄ r←_render         ⍝ Invocation shorthands
         f←l{0<≢b: ⍺⍺ ⍵ ⋄ b ⍵⍵ ⍵}r       ⍝ Choose invocation
         f ⍵                             ⍝ Invoke
     }
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
-        'R'⎕WC'HTMLRenderer'('URL'⍵)
+        r←'R'⎕WC'HTMLRenderer'('URL'⍵)  ⍝ R←renderer (launched)
+        adjZoom 0                       ⍝ Set zoom level based on configuration, session offset
+    }
+
+    ∇ r ← _hra                          ⍝ Indicates if HtmlRenderer is active
+        r←×⎕THIS.⎕NC'R'                 ⍝ Check for presence of R
+    ∇
+
+    adjZoom←{                           ⍝ Updates zoom level of active renderer
+        ~_hra : 0                       ⍝ Ignore of no active renderer
+        _zoomOffset+←⍵                  ⍝ Adjust cached offset
+        z←_cfg.zoom+_zoomOffset         ⍝ Compute new zoom level 
+        R.SetZoomLevel z                ⍝ Apply new zoom level
     }
 
     ⍝
@@ -29,7 +43,7 @@
     }
 
     _launch←{                           ⍝ Launches given URL (⍵) in given browser (⍺)
-        s←##.Config.Curr.showCmd        ⍝ Command display setting (undocumented switch)
+        s←_cfg.showCmd                  ⍝ Command display setting (undocumented switch)
         f←⎕CMD∘{s: ⎕←⍵ ⋄ ⍵}             ⍝ Glue command execution to optional command display
         f ⍺ _launchStr ⍵                ⍝ Compose lauch string, launch 
     }
@@ -94,4 +108,7 @@
 
     _browsers←_buildBrowserDetails ⍬    ⍝ Browser launch details (see above)
 
+    ∇ r ← _cfg                          ⍝ Retrieves application configuration NS
+        r←##.Config.Curr
+    ∇
 :EndNamespace
