@@ -1,6 +1,7 @@
 :Namespace Browser
 
-    _zoomOffset←0                       ⍝ Session offset from configured HtmlRenderer zoom level
+    _zoom←0                             ⍝ Zoom level of active HtmlRenderer at launch
+    _zoomOffset←0                       ⍝ Session offset of HtmlRenderer zoom level (persists during workspace session)
 
     ⍝
     ⍝ Launches given URL (⍵) in configured browser, or in HtmlRenderer if none.
@@ -14,6 +15,7 @@
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
         r←'R'⎕WC'HTMLRenderer'('URL'⍵)  ⍝ R←renderer (launched)
+        ⎕THIS._zoom←_cfg.zoom           ⍝ Cache configured zoom level
         adjZoom 0                       ⍝ Set zoom level based on configuration, session offset
     }
 
@@ -24,7 +26,7 @@
     adjZoom←{                           ⍝ Updates zoom level of active renderer
         ~_hra : 0                       ⍝ Ignore of no active renderer
         _zoomOffset+←⍵                  ⍝ Adjust cached offset
-        z←_cfg.zoom+_zoomOffset         ⍝ Compute new zoom level 
+        z←_zoom+_zoomOffset             ⍝ Compute new zoom level 
         R.SetZoomLevel z                ⍝ Apply new zoom level
     }
 

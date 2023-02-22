@@ -143,12 +143,39 @@
         r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
     ∇
 
-    ∇ speedscope input
+    ∇ speedscope input;e
         e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
         1(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
         ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
     ∇
 
+    __Zoomscope←{
+        ⍵.Run←zoomscope
+        ⍵.Desc←'Adjust zoom level of existing speedscope renderer window'
+        ⍵.Parse←'1S'
+
+        ⍵.HelpText←{
+            ⎕IO←0 ⋄ h←1↑⊂⍬
+
+            h[0],←⊂⊂'Adjusts zoom level of existing speedscope renderer window by the given amount.'
+            h[0],←⊂⊂''
+            h[0],←⊂⊂'  ]Zoomscope [<num>]'
+            h[0],←⊂⊂''
+            h[0],←⊂⊂'Positive values increase the zoom level, and negative values decrease it. The'
+            h[0],←⊂⊂'zoom scale is not linear. See the HTMLRenderer User Guide for more details.'
+            h[0],←⊂⊂''
+            h[0],←⊂⊂'If no value is provided, the zoom level is increased by 1.'
+            h
+        }⍬
+
+        ⍵                               ⍝ Return command object
+    }
+
+    ∇ zoomscope input;a
+        a←a,(⍴a←input.Arguments)↓⊂'1'   ⍝ Apply default argument
+        a←2⌷⎕VFI⊃a                      ⍝ Parse argument
+        ##.NS.Browser.adjZoom a         ⍝ Adjust zoom (ignores if none running, no-op if bad parse)
+    ∇
 
     ⍝
     ⍝ --- Template initialization ----------------------------------------------
