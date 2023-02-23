@@ -18,7 +18,7 @@
     ∇ clr prof expr                     ⍝ clr: bool; expr: str ∨ str list
         (clear⍣(isClear<×clr))⍬         ⍝ Clear buffer if requested and required
         ⎕PROFILE 'start' 'elapsed'      ⍝ Start profiling
-        x←⍎¨↓↑expr                      ⍝ Evaluate expression(s), suppress results 
+        {}⍎¨↓↑expr                      ⍝ Evaluate expression(s), suppress results 
         ⎕PROFILE 'stop'                 ⍝ Stop profiling
     ∇
 

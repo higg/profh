@@ -18,7 +18,7 @@
         c←⎕NS Default                   ⍝ Start with default configuration
         projDir←##.updir srcDir         ⍝ Determine project location
         c.libDir←projDir,'/lib'         ⍝ Cache directory containing external tools
-        x←importLocal projDir           ⍝ Fetch local overrides, if any
+        _←importLocal projDir           ⍝ Fetch local overrides, if any
         c←applyLocal c                  ⍝ Apply local overrides, if any
         c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
         ⎕THIS.Curr←c                    ⍝ Cache in global context
@@ -40,7 +40,7 @@
     applyModifiers←{                    ⍝ Applies overriding ucmd modifiers to given namespace
         f←##.keys ⍺                     ⍝ Get field names
         v←(⍺⍎¨f)⍵.Switch¨f              ⍝ Resolve values
-        x←f ⍺.{⍎⍺,'←⍵'}¨v               ⍝ Apply updates
+        _←f ⍺.{⍎⍺,'←⍵'}¨v               ⍝ Apply updates
         ⍺                               ⍝ Return left, for caller's convenience
     }
 

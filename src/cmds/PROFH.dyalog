@@ -44,7 +44,7 @@
         _cmds←_buildCmds ⍬              ⍝ Build command objects
 
         :If 3=⊃⎕NC '_preRunHook'        ⍝ User custom pre-run hook, if provided
-          _prh←_preRunHook{x←⍺⍺ ⍵ ⋄ ⍵}
+          _prh←_preRunHook{_←⍺⍺ ⍵ ⋄ ⍵}
         :Endif
         r←1                             ⍝ Dummy result (namespace semantics)
     ∇
