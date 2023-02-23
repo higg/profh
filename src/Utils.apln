@@ -22,6 +22,12 @@
     ##.keys←keys
 
     ⍝
+    ⍝ Pluralization helpers.
+    ⍝
+    _plural←{(⊃⍣(~≢⍴⍵))⍺⌷⍨⊂1+1≠⍵}       ⍝ Indexes into singular/plural suffices (⍺) by oridnalities (⍵)
+    ##.ps←''(,'s')∘_plural              ⍝ Returns default English pluralization suffix string based on input count (⍵)   
+
+    ⍝
     ⍝ --- Lifted from dfns workspace ------------------------------------------
     ⍝
 
