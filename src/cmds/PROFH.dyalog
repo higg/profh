@@ -82,7 +82,6 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D
-        ⍝ //! Document -keepTemp (if keeping)
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -90,7 +89,7 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
             h[0],←⊂⊂'interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-zoom=<num>]'
+            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-zoom=<num>] [-keepTemp]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -112,6 +111,10 @@
             h[1],←⊂⊂''
             h[1],←⊂⊂'-zoom=<num>        Sets the zoom level applied to the HtmlRenderer window. Only'
             h[1],←⊂⊂'                   applies when "-browser" modifier omitted. Defaults to 0.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-keepTemp          When provided, any temporary export files created during'
+            h[1],←⊂⊂'                   previous invocations are retained. Otherwise they are deleted.'
             h[2],←⊂⊂''
             h[2],←⊂⊂'A stand-alone version of speedscope is distributed with this user command. All'
             h[2],←⊂⊂'processing is performed client-side (all data remains local; no network access'

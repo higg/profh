@@ -1,4 +1,4 @@
- {ctl}←{fnname}Graph ctl;file;tie;arg;md;ix;i
+ {ctl}←{fnname}Graph ctl;p;del;file;tie;arg;md;ix;i
  ⍝ the timings in SpeedScope are displayed in microseconds
 
  ⍝ //! Hoist this, I think
@@ -28,6 +28,17 @@
  :EndIf
 
  ⍝
+ ⍝ Delete previous temporary export files, unless directed otherwise.
+ ⍝
+ del←~Config.Curr.keepTemp              ⍝ Decide if deleting
+ 3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
+ p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/speedscope_*.js' ⍝ Identify previous export files
+
+ ⎕←(⊃(1+del)⌷'Retaining ' 'Deleting '),(⍕≢p),' previous export file',ps ≢p
+
+ {}3 (⎕NDELETE⍣del) p                   ⍝ Delete previous files, if so configured; suppress output
+
+ ⍝
  ⍝ Create temporary export file.
  ⍝
  3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
@@ -43,12 +54,3 @@
  ⍝
  arg←'file:///',Config.Curr.libDir,'/speedscope/index.html#localProfilePath=',file
  Browser.browse arg
-
- ⍝
- ⍝ Delete temporary export file, unless requested otherwise.
- ⍝
- :If ~Config.Curr.keepTemp
-    ⍝ ↓↓↓ Much heuristic, very wow.
-    ⎕DL 2+(⊃2 ⎕NINFO file)÷10000000 ⍝ Give browser time to launch
-    3 ⎕NDELETE file ⍝ Delete export file
- :EndIf

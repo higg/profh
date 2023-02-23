@@ -6,7 +6,7 @@
     Default←⎕NS⍬
     Default.browser         ←''         ⍝ Browser launched for web-based applications (HtmlRenderer if empty)
     Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
-    Default.keepTemp        ←0          ⍝ Indicates if temporary files should be kept rather than deleted
+    Default.keepTemp        ←0          ⍝ Indicates if previous temporary files should be kept rather than deleted
     Default.showCmd         ←0          ⍝ If set, displays external command before execution
     Default.zoom            ←0          ⍝ HtmlRenderer zoom level
 
