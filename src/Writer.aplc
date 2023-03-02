@@ -11,11 +11,11 @@
 
     i8←{¯128+256|⍵+128} ⍝ Converts to signed byte
 
-      base64enc←{
-          ⎕IO ⎕ML←0 1             ⍝ Base64 encoding and decoding as used in MIME.
-          ⍺←⎕A,(⎕C ⎕A),⎕D,'+/'
-          ⍺[2⊥⍉{⍵⍴⍨6,⍨(≢⍵)÷6}{⍵↑⍨6×⌈(≢⍵)÷6}11 ⎕DR⊃0 83 ⎕DR ⍵]
-      }
+    base64enc←{
+        ⎕IO ⎕ML←0 1                     ⍝ Base64 encoding as used in MIME
+        ⍺←⎕A,(⎕C ⎕A),⎕D,'+/'
+        ⍺[2⊥⍉{⍵⍴⍨6,⍨(≢⍵)÷6}{⍵↑⍨6×⌈(≢⍵)÷6}11 ⎕DR⊃0 83 ⎕DR ⍵]
+    }
 
     writeb64←{
         z←∊⍵,¨⊂MIME_EOL                 ⍝ Append CR/LFs, flatten
@@ -26,74 +26,74 @@
         z ⎕NAPPEND _tie,83              ⍝ Append to file
     }
 
-      write←{
-          (⍵'UTF-8-BOM')⎕NPUT _file 2
-      }
+    write←{
+        (⍵'UTF-8-BOM')⎕NPUT _file 2
+    }
 
-      writeutf8←{
-          (i8'UTF-8'⎕UCS ⍵)⎕NAPPEND _tie 83
-      }
+    writeutf8←{
+        (i8'UTF-8'⎕UCS ⍵)⎕NAPPEND _tie 83
+    }
 
     ∇ make(file base64)
-      :Access public instance
-      :Implements constructor
-      _file _base64←file base64
-      _tie←⍬
-      _written←0
-      _buf←⍬
-      _maxbufsize←10000
-      _leftover←⍬
+        :Access public instance
+        :Implements constructor
+        _file _base64←file base64
+        _tie←⍬
+        _written←0
+        _buf←⍬
+        _maxbufsize←10000
+        _leftover←⍬
      
-      3 ⎕NDELETE _file
+        3 ⎕NDELETE _file
      
-      :If _base64
-          _tie←_file ⎕NCREATE 0
-          writeutf8'speedscope.loadFileFromBase64("Dyalog_Perf.collapsedstack.txt","77u/'
-      :EndIf
+        :If _base64
+            _tie←_file ⎕NCREATE 0
+            writeutf8'speedscope.loadFileFromBase64("Dyalog_Perf.collapsedstack.txt","77u/'
+        :EndIf
     ∇
 
     ∇ {_}←Close _
-      :Access public instance
-      ⎕NUNTIE _tie
+        :Access public instance
+        ⎕NUNTIE _tie
     ∇
 
     ∇ {b}←Write line
-      :Access public instance
-      _buf,←⊂line
-      :If b←_maxbufsize<≢_buf
-          Flush 0
-      :EndIf
+        :Access public instance
+        _buf,←⊂line
+        :If b←_maxbufsize<≢_buf
+            Flush 0
+        :EndIf
     ∇
 
     ∇ {toobig}←Flush final;x
-      :Access public instance
-      :If ~0∊⍴_buf
-          :If _base64
-              writeb64 _buf
-          :Else
-              write _buf
-          :EndIf
-          _buf←⍬
-      :EndIf
-      :If final
-      :AndIf _base64
-          :If ~0∊⍴_leftover
-              _written+←≢x←⎕UCS base64enc _leftover
-              x ⎕NAPPEND _tie,83
-          :EndIf
-          writeutf8'='⍴⍨{(×4|⍵)×4-4|⍵}_written
-          writeutf8'")',MIME_EOL
-      :EndIf
-      toobig←(510000000×(3+_base64)÷3)<⊃2 ⎕NINFO _file
+        :Access public instance
+        :If ~0∊⍴_buf
+            :If _base64
+                writeb64 _buf
+            :Else
+                write _buf
+            :EndIf
+            _buf←⍬
+        :EndIf
+        :If final
+        :AndIf _base64
+            :If ~0∊⍴_leftover
+                _written+←≢x←⎕UCS base64enc _leftover
+                x ⎕NAPPEND _tie,83
+            :EndIf
+            writeutf8'='⍴⍨{(×4|⍵)×4-4|⍵}_written
+            writeutf8'")',MIME_EOL
+        :EndIf
+        toobig←(510000000×(3+_base64)÷3)<⊃2 ⎕NINFO _file
     ∇
 
     ∇ dispose
-      :Implements destructor
-      :Trap 0
-          Close ⍬
-      :Else
-          ⎕←'⍝ '⎕DMX
-      :EndTrap
+        :Implements destructor
+        :Trap 0
+            Close ⍬
+        :Else
+            ⎕←'⍝ '⎕DMX
+        :EndTrap
     ∇
 
 :EndClass
