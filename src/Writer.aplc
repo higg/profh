@@ -17,14 +17,14 @@
           ⍺[2⊥⍉{⍵⍴⍨6,⍨(≢⍵)÷6}{⍵↑⍨6×⌈(≢⍵)÷6}11 ⎕DR⊃0 83 ⎕DR ⍵]
       }
 
-    ∇ {r}←writeb64 buf;z;x;c
-      z←_leftover,i8'UTF-8'⎕UCS∊buf,¨⊂MIME_EOL ⍝ Append CR/LFs, flatten, and convert to UTF-8
-      x←z↑⍨3×⌊3÷⍨≢z
-      _leftover←z↑⍨-(≢z)|3
-      c←⎕UCS base64enc x
-      _written+←≢c
-      r←c ⎕NAPPEND _tie,83
-    ∇
+    writeb64←{
+        z←∊⍵,¨⊂MIME_EOL                 ⍝ Append CR/LFs, flatten
+        z←_leftover,i8'UTF-8'⎕UCS z     ⍝ Convert to UTF-8, apply previous residue
+        ⎕THIS._leftover← z↑⍨r←-3|≢z     ⍝ Compute and defer residue from b64's 24-bit alignment
+        z←⎕UCS base64enc z↓⍨r           ⍝ Trime residue, encode and prepare
+        _written+←≢z                    ⍝ Update write count
+        z ⎕NAPPEND _tie,83              ⍝ Append to file
+    }
 
       write←{
           (⍵'UTF-8-BOM')⎕NPUT _file 2
