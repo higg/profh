@@ -82,7 +82,7 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D,' '
-        ⍵.Parse,←'-topFn='
+        ⍵.Parse,←'-topFn= -cpu'
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -90,8 +90,8 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
             h[0],←⊂⊂'interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-zoom=<num>]'
-            h[0],←⊂⊂'       [-keepTemp] [-topFn=<value>]'
+            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-cpu]'
+            h[0],←⊂⊂'       [-keepTemp] [-topFn=<value>]  [-zoom=<num>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -111,8 +111,8 @@
             h[1],←⊂⊂'                   If omitted, HtmlRenderer is used.'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
-            h[1],←⊂⊂'-zoom=<num>        Sets the zoom level applied to the HtmlRenderer window. Only'
-            h[1],←⊂⊂'                   applies when "-browser" modifier omitted. Defaults to 0.'
+            h[1],←⊂⊂'-cpu               When set profiling is based on CPU timer, otherwise elapsed'
+            h[1],←⊂⊂'                   time. Ignored if no expression is provided'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-keepTemp          When provided, any temporary export files created during'
@@ -129,6 +129,10 @@
             h[1],←⊂⊂'                   files are too large).'
             h[1],←⊂⊂''
             h[1],←⊂⊂'                   If not fully qualified, the #. root namespace is assumed.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-zoom=<num>        Sets the zoom level applied to the HtmlRenderer window. Only'
+            h[1],←⊂⊂'                   applies when "-browser" modifier omitted. Defaults to 0.'
             h[2],←⊂⊂''
             h[2],←⊂⊂'A stand-alone version of speedscope is distributed with this user command. All'
             h[2],←⊂⊂'processing is performed client-side (all data remains local; no network access'
@@ -160,9 +164,10 @@
         r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
     ∇
 
-    ∇ speedscope input;e
+    ∇ speedscope input;e;f
         e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
-        1(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
+        f←1 ##.NS.Config.Curr.cpu       ⍝ Profiling (f)lags
+        f(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
         ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
     ∇
 

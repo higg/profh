@@ -1,13 +1,13 @@
 :Namespace Profile
 
     clear←{                             ⍝ Clears ⎕PROFILE's buffer (ignores argument)
-        ⎕←'Clearing previous buffer contents'
+        ⎕←'Clearing previous ⎕PROFILE buffer contents'
         ⎕PROFILE 'clear'
     }
 
 
     ∇ r ← isClear                       ⍝ Determines if ⎕PROFILE's buffer is clear
-        r←0=⊃⍴⎕PROFILE 'tree'
+        r←~×≢⊃2⌷⎕PROFILE 'state'
     ∇
 
 
@@ -15,9 +15,14 @@
     ⍝ Profiles execution of one or more expressions (strings), optionally
     ⍝ clearing ⎕PROFILE's data buffer first.
     ⍝
-    ∇ clr prof expr                     ⍝ clr: bool; expr: str ∨ str list
-        (clear⍣(isClear<×clr))⍬         ⍝ Clear buffer if requested and required
-        ⎕PROFILE 'start' 'elapsed'      ⍝ Start profiling
+    ⍝ Left argument is a vector of booleans as follows:
+    ⍝   [1] indicates if previous ⎕PROFILE data should be cleared
+    ⍝   [2] indicates if profiling should use CPU timer, otherwise uses elapsed time
+    ⍝
+    ∇ flags prof expr ;t
+        clear⍣(isClear<×⊃flags)⊢⍬       ⍝ Clear buffer if requested and required
+        t←⊃'elapsed' 'cpu'⌷⍨1+2⌷flags   ⍝ Determine profiling type
+        ⎕PROFILE 'start' t              ⍝ Start profiling
         {}⍎¨↓↑expr                      ⍝ Evaluate expression(s), suppress results 
         ⎕PROFILE 'stop'                 ⍝ Stop profiling
     ∇
