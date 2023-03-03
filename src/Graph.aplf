@@ -1,9 +1,11 @@
- {ctl}←{fnname}Graph ctl;p;del;file;tie;arg;md;ix;i
+ {ctl}←{fnname}Graph ctl;cfg;tfn;p;del;file;tie;arg;md;ix;i
  ⍝ the timings in SpeedScope are displayed in microseconds
 
  ⍝ //! Hoist this, I think
  ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}ctl ⍝ Fetch profile results, unless provided
  ⍝ ctl ← 1: depth level  2: function name  3: function line number  4: exclusive accumulated time (ms)
+
+ cfg←Config.Curr                        ⍝ Alias effective configuration
 
  :If 0=≢⊃ctl                            ⍝ Abort if no profile data available
     ⎕←'No profile data!'
@@ -14,11 +16,11 @@
  ⍝
  ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
  ⍝
- :If 0≠⎕NC'fnname' ⍝ If `fnname` defined, use it for results pruning //! Make explicit
-     ix←0⌈¯1+⊃⍸(2⊃ctl)≢¨⊂fnname ⍝ (I)nde(x) of function's first occurence
-     ctl←ix↓¨ctl                ⍝ Remove entries before it
-     md←0⌈¯1+(⊃ctl)[1]          ⍝ //! ???
-     ⍝ fnname should be rationalized against '#.' removing heuristic
+ :If 0<≢tfn←cfg.topFn                   ⍝ If function-level pruning requested...
+     tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn        ⍝ Assume root NS if not explicit
+     ix←0⌈¯1+⊃⍸(2⊃ctl)≡¨⊂tfn            ⍝ (I)nde(x) of function's first occurence
+     ctl←ix↓¨ctl                        ⍝ Remove entries before it
+     md←0⌈¯1+⊃⊃ctl                      ⍝ Record depth of new starting point, to adjust later
  :Else
      :If 0≠i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
          md←i⊃⊃ctl
@@ -30,7 +32,7 @@
  ⍝
  ⍝ Delete previous temporary export files, unless directed otherwise.
  ⍝
- del←~Config.Curr.keepTemp              ⍝ Decide if deleting
+ del←~cfg.keepTemp                      ⍝ Decide if deleting
  3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
  p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/speedscope_*.js' ⍝ Identify previous export files
 
@@ -52,5 +54,5 @@
  ⍝
  ⍝ Launch speedscope in browser.
  ⍝
- arg←'file:///',Config.Curr.libDir,'/speedscope/index.html#localProfilePath=',file
+ arg←'file:///',cfg.libDir,'/speedscope/index.html#localProfilePath=',file
  Browser.browse arg

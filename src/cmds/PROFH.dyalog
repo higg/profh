@@ -81,7 +81,8 @@
     __speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
-        ⍵.Parse←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D
+        ⍵.Parse ←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D,' '
+        ⍵.Parse,←'-topFn='
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -89,7 +90,8 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
             h[0],←⊂⊂'interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-zoom=<num>] [-keepTemp]'
+            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-zoom=<num>]'
+            h[0],←⊂⊂'       [-keepTemp] [-topFn=<value>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -115,6 +117,18 @@
             h[1],←⊂⊂''
             h[1],←⊂⊂'-keepTemp          When provided, any temporary export files created during'
             h[1],←⊂⊂'                   previous invocations are retained. Otherwise they are deleted.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-topFn=<value>     Specifies the name of the function to use as the top-level of'
+            h[1],←⊂⊂'                   the profile. Any stack activity not invoked by the given'
+            h[1],←⊂⊂'                   function is excluded from the visualized results.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   This is not only useful in eliminating noise from the'
+            h[1],←⊂⊂'                   analysis, but also to reduce the size of the file exported'
+            h[1],←⊂⊂'                   to speedscope (which has been known to fail silently when'
+            h[1],←⊂⊂'                   files are too large).'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   If not fully qualified, the #. root namespace is assumed.'
             h[2],←⊂⊂''
             h[2],←⊂⊂'A stand-alone version of speedscope is distributed with this user command. All'
             h[2],←⊂⊂'processing is performed client-side (all data remains local; no network access'
