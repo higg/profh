@@ -47,7 +47,7 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 
 The default values of any command switches or modifiers can be locally overridden via a JSON configuration file. The contents of that file are treated as a mapping of switch or modifier names to default values of appropriate type. To include a command switch by default, include an entry for the switch, and set the value to `1` (NB: `1`, not `true`).
 
-The file should be called `ConfigLocal.json`, and should placed in dirrectory named `profh-cfg` which is peer to the project installation directory (e.g. `%userprofile%\Documents\MyUCMDs\profh-cfg` or `$HOME/MyUCMDs/profh-cfg`)
+The file should be called `ConfigLocal.json`, and should placed in a directory named `profh-cfg` which is peer to the project installation directory (e.g. `%userprofile%\Documents\MyUCMDs\profh-cfg` or `$HOME/MyUCMDs/profh-cfg`)
 
 Example file contents can be found below:
 
