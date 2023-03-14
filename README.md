@@ -45,18 +45,19 @@ If the interpreter reports "No commands or groups match profh", then the tool se
 
 ## Configuration
 
-When launching web-based applications, the default browser used by this toolkit is Dyalog's built-in HtmlRenderer. This can be overridden by use of a `browser=<value>` modifier when issuing user commands (see `]?? speedscope` for more details).
+The default values of any command switches or modifiers can be locally overridden via a JSON configuration file. The contents of that file are treated as a mapping of switch or modifier names to default values of appropriate type. To include a command switch by default, include an entry for the switch, and set the value to `1` (NB: `1`, not `true`).
 
-To permanently configure a different browser to be the default, follow the following steps:
-- Create a new directory that is a peer to the project installation directory with a suffix of "-cfg" (e.g. `%userprofile%\Documents\MyUCMDs\profh-cfg` or `$HOME/MyUCMDs/profh-cfg`)
-- Within that directory, create a file called `ConfigLocal.apln`
-- In that file, define an APL namespace with a `browser` entry, and set it to a string representing the value that would be passed to the `browser` command modifier.
-```apl
-:Namespace ConfigLocal
-    browser ← 'chrome'
-:EndNamespace
+The file should be called `ConfigLocal.json`, and should placed in dirrectory named `profh-cfg` which is peer to the project installation directory (e.g. `%userprofile%\Documents\MyUCMDs\profh-cfg` or `$HOME/MyUCMDs/profh-cfg`)
+
+Example file contents can be found below:
+
+```json
+{
+	"browser": "chrome",
+	"keepTemp": 1
+}
 ```
 
 ## Caveats
-- The initial invocation of the `]speedscope` user command triggers a code import into the `⎕SE.PROFH` namespace, potentially causing a conflict if that namespace is used by the application being profiled.
+- The initial invocation of a user command in this package triggers a code import into the `⎕SE.PROFH` namespace, potentially causing a conflict if that namespace is used by the application being profiled.
 - Utilities in this toolkit may create and/or delete files and directories in a system temporary directory suitable for user files (e.g. `c:/users/<username>/AppData/Local/Temp/PROFH` on Windows or `/tmp/PROFH` on other operating systems).

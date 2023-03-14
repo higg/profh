@@ -14,29 +14,22 @@
 
     Curr←Default                        ⍝ Holds configuration used at runtime
     srcDir←''                           ⍝ Package source directory (assigned later)
-    CFGL←'ConfigLocal'                  ⍝ Peer namespace containg local default overrides
 
     apply←{                             ⍝ Resovles defaults and applies incomings ucmd modifiers into Config.Curr 
         c←⎕NS Default                   ⍝ Start with default configuration
-        projDir←##.updir srcDir         ⍝ Determine project location
-        c.libDir←projDir,'/lib'         ⍝ Cache directory containing external tools
-        _←importLocal projDir           ⍝ Fetch local overrides, if any
-        c←applyLocal c                  ⍝ Apply local overrides, if any
+        projd←##.updir srcDir           ⍝ Determine project location
+        c.libDir←projd,'/lib'           ⍝ Cache directory containing external tools
+        c←c ##.update fetchLocal projd  ⍝ Fetch and apply local overrides, if any
         c←c applyModifiers ⍵            ⍝ Apply incoming modifiers
         ⎕THIS.Curr←c                    ⍝ Cache in global context
         ⍵                               ⍝ Return right, for caller's convenience
     }
 
-    applyLocal←{                        ⍝ Applies local overrides to given NS
-        9≠⎕NC'##.',CFGL : ⍵             ⍝ Abort if none
-        ⍵ ##.update ##.ConfigLocal      ⍝ Apply overrides
-    }
-
-    importLocal←{                       ⍝ Import local overrides to defaults, if any
-        n←⍵,'-cfg/',CFGL,'.apln'        ⍝ File name of local overrides
-        f←⎕SE.Link.Import⍣(⎕NEXISTS n)  ⍝ Determine if file exists, plan to import if so
-        o←⎕NS⍬ ⋄ o.overwrite←1          ⍝ Construct import options
-        o f(⍕##)n                       ⍝ Perform the import, if appropriate
+    fetchLocal←{
+        n←⍵,'-cfg/ConfigLocal.json'     ⍝ Determine file path
+        e←⎕NEXISTS n                    ⍝ Check its existence
+        s←(1+e)⊃'{}',⍥⊂⊃⎕NGET⍣e⊢n 0     ⍝ Fetch config, or default to empty map
+        ⎕JSON s                         ⍝ Convert to JSON
     }
 
     applyModifiers←{                    ⍝ Applies overriding ucmd modifiers to given namespace
