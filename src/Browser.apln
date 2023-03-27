@@ -14,8 +14,9 @@
     }
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
-        r←'R'⎕WC'HTMLRenderer'('URL'⍵)  ⍝ R←renderer (launched)
+        _←'R'⎕WC'HTMLRenderer'('URL'⍵)  ⍝ Launch renderer (R←instance)
         ⎕THIS._zoom←_cfg.zoom           ⍝ Cache configured zoom level
+        _←⎕DL 0.15                      ⍝ Delay a moment, due to bug in HTMLRenderer (Dyalog Bug #: 20443)
         adjZoom 0                       ⍝ Set zoom level based on configuration, session offset
     }
 
