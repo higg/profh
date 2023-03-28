@@ -1,32 +1,37 @@
  {ctl}←{fnname}Graph ctl;cfg;tfn;p;del;file;tie;arg;md;ix;i
- ⍝ the timings in SpeedScope are displayed in microseconds
-
- ⍝ //! Hoist this, I think
- ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}ctl ⍝ Fetch profile results, unless provided
- ⍝ ctl ← 1: depth level  2: function name  3: function line number  4: exclusive accumulated time (ms)
 
  cfg←Config.Curr                        ⍝ Alias effective configuration
 
+ ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}ctl ⍝ Fetch profile results, unless provided
  :If 0=≢⊃ctl                            ⍝ Abort if no profile data available
     ⎕←'No profile data!'
     :Return
  :EndIf
 
+ ⍝
+ ⍝ At this point, ctl is a list of vectors composed as follows:
+ ⍝      [1] depth level
+ ⍝      [2] function name
+ ⍝      [3] function line number
+ ⍝      [4] exclusive accumulated time (ms)
+ ⍝
 
  ⍝
  ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
  ⍝
+ md←0                                   ⍝ Assume no depth-pruning
+
  :If 0<≢tfn←cfg.topFn                   ⍝ If function-level pruning requested...
      tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn        ⍝ Assume root NS if not explicit
      ix←0⌈¯1+⊃⍸(2⊃ctl)≡¨⊂tfn            ⍝ (I)nde(x) of function's first occurence
      ctl←ix↓¨ctl                        ⍝ Remove entries before it
      md←0⌈¯1+⊃⊃ctl                      ⍝ Record depth of new starting point, to adjust later
- :Else
-     :If 0≠i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
-         md←i⊃⊃ctl
-     :Else
-         md←0
-     :EndIf
+     ⎕←'Pruning outside of ',tfn
+ :ElseIf 0<i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
+     ⍝ Remove entries that were on the stack when profiling started (exlusive time 0)//!
+     ⍝ Mention to SL //!
+     md←i⊃⊃ctl
+     ⎕←'Removing leading entries'
  :EndIf
 
  ⍝
@@ -36,16 +41,16 @@
  3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
  p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/speedscope_*.js' ⍝ Identify previous export files
 
- ⎕←(⊃(1+del)⌷'Retaining ' 'Deleting '),(⍕≢p),' previous export file',ps ≢p
+ ⎕←('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
 
- {}3 (⎕NDELETE⍣del) p                   ⍝ Delete previous files, if so configured; suppress output
+ {}3⎕NDELETE⍣del⊢p                      ⍝ Delete previous files, if so configured; suppress output
 
  ⍝
  ⍝ Create temporary export file.
  ⍝
  3 ⎕MKDIR TEMP_DIR                      ⍝ Create temporary directory, if needed
  file←TEMP_DIR,'/speedscope_.js'        ⍝ Determine temporary file location and rootname
- tie←file(⎕NCREATE ⎕OPT'Unique' 1)0     ⍝ Create file, appending random chars to filename
+ tie←file ⎕NCREATE ⎕OPT'Unique'1 ⊢0     ⍝ Create file, appending random chars to filename
  file←⊃0 ⎕NINFO tie                     ⍝ Pick up randomized filename
  ⎕NUNTIE tie
 
