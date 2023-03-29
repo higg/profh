@@ -1,4 +1,4 @@
-{ctl}←{fnname}Graph ctl;cfg;tfn;p;del;file;tie;arg;md;ix;i
+{ctl}←Graph ctl;arg;cfg;del;file;i;ix;md;minimum;p;tfn;tie;depth;fnname;line;elapsed
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
 
@@ -33,6 +33,28 @@
         md←i⊃⊃ctl
         ⎕←'Removing leading entries'
     :EndIf
+
+
+    ⍝ //! Rough application of min-depth
+
+    depth fnname line elapsed←ctl ⍝ //! Also remove localizations
+
+    ⍝
+    ⍝ minimum depth: remove the crud to make the file smaller
+    ⍝ //! Make md be the minimum depth to retain, not prune (else rename)
+    ⍝
+    :If md≠0
+        depth fnname line elapsed⌿⍨←⊂depth>md ⍝ //! ≥ (but need to adjust caller)
+        depth-←md+1 ⍝ no +1
+    :EndIf
+
+    depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth ⍝ //! Prune after a non-initial depth-0
+    fnname trimPfx⍨←'#.'                ⍝ Trim root namespace indicators
+    depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨(line=¯1)∧1,⍨2≢/fnname ⍝ Remove top level entries //! Even depths, or ¯1 lines even when function doesn't change (probably for some stored format)
+    depth+←line=¯1                      ⍝ Convert ¯1's to 0's
+
+    ctl←depth fnname line elapsed
+    ⍝ //!
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.

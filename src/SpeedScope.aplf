@@ -2,20 +2,6 @@
 
     file base64 md←ctl                  ⍝ Decompose left argument: filepath/base64-flag/min-depth
 
-    ⍝
-    ⍝ minimum depth: remove the crud to make the file smaller
-    ⍝ //! Make md be the minimum depth to retain, not prune (else rename)
-    ⍝
-    :If md≠0
-        depth fnname line elapsed⌿⍨←⊂depth>md ⍝ //! ≥ (but need to adjust caller)
-        depth-←md+1 ⍝ no +1
-    :EndIf
-
-    depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth ⍝ //! Prune after a non-initial depth-0
-    fnname trimPfx⍨←'#.'                ⍝ Trim root namespace indicators
-    depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨(line=¯1)∧1,⍨2≢/fnname ⍝ Remove top level entries //! Even depths, or ¯1 lines even when function doesn't change (probably for some stored format)
-    depth+←line=¯1                      ⍝ Convert ¯1's to 0's
-
     _out←⎕NEW Writer(file base64)
     ⍞←'⍝ '
     ⎕PP←18
@@ -39,7 +25,7 @@
             tot[f/x]-←f/⍺
             tot
         }
-    s←0⌈(⌈1000000×elapsed)spt 1+depth
+        s←0⌈(⌈1000000×elapsed)spt 1+depth
     :Else
         ⍝ the timings in SpeedScope are displayed in microseconds
         s←0⌈⌈1000000×elapsed
