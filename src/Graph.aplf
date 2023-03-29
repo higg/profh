@@ -25,9 +25,9 @@
         tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn     ⍝ Assume root NS if not explicit
         ix←0⌈¯1+⊃⍸(2⊃ctl)≡¨⊂tfn         ⍝ (I)nde(x) of function's first occurence
         ctl←ix↓¨ctl                     ⍝ Remove entries before it
-        md←0⌈¯1+⊃⊃ctl                   ⍝ Record depth of new starting point, to adjust later
+        md←0⌈⊃⊃ctl                      ⍝ Record depth of new starting point, to adjust later
         ⎕←'Pruning outside of ',tfn
-    :ElseIf 0<i←+/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
+    :ElseIf 0<i←1++/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
         ⍝ Remove entries that were on the stack when profiling started (exlusive time 0)//!
         ⍝ Mention to SL //!
         md←i⊃⊃ctl
@@ -41,11 +41,10 @@
 
     ⍝
     ⍝ minimum depth: remove the crud to make the file smaller
-    ⍝ //! Make md be the minimum depth to retain, not prune (else rename)
     ⍝
     :If md≠0
-        depth fnname line elapsed⌿⍨←⊂depth>md ⍝ //! ≥ (but need to adjust caller)
-        depth-←md+1 ⍝ no +1
+        depth fnname line elapsed⌿⍨←⊂depth≥md
+        depth-←md
     :EndIf
 
     depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth ⍝ //! Prune after a non-initial depth-0
