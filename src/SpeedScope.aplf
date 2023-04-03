@@ -1,4 +1,4 @@
-{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;s;⎕PP;d;f;l;e;_out
+{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;⎕PP;d;f;l;e;_out
     _out←⎕NEW Writer(file 1)
     ⍞←'⍝ '
     ⎕PP←18
