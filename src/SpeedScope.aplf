@@ -15,7 +15,7 @@
         :If d>ld
             stk,←⊂f
         :ElseIf d<ld
-            stk←(-1+0.5×ld-d)↓stk
+            stk←(-1+ld-d)↓stk
             stk,←⊂f
         :Else
             ⍝59  #.Conga.LIB.Send                          4     377       7.371103391051292          35.96187336370349         1131      3770

@@ -82,6 +82,7 @@
     ct⌿⍨←~h                             ⍝ Purge normal headers
 
     ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
+    ct[;1]÷←2                           ⍝ Adjust depths to increment by 1
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.
