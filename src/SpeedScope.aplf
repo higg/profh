@@ -1,8 +1,5 @@
-{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
-
-    file base64←ctl                     ⍝ Decompose left argument: filepath, base64-flag
-
-    _out←⎕NEW Writer(file base64)
+{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
+    _out←⎕NEW Writer(file 1)
     ⍞←'⍝ '
     ⎕PP←18
     stk←⍬

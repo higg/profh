@@ -103,7 +103,7 @@
     file←⊃0 ⎕NINFO tie                  ⍝ Pick up randomized filename
     ⎕NUNTIE tie
 
-    file 1 SpeedScope ↓⍉ct              ⍝ Perform export
+    file SpeedScope ↓⍉ct                ⍝ Perform export
 
     ⍝
     ⍝ Launch speedscope in browser.
