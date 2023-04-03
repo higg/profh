@@ -52,18 +52,18 @@
         ⎕←'Removing leading entries'
     :EndIf
 
-
     ⍝
     ⍝ Perform depth-based pruning.
     ⍝
-    :If md≠0
-        ct⌿⍨←ct[;1]≥md
-        ct[;1]-←md
+    :If md≠0                            ⍝ Skip if no-op (for performance)
+        ct⌿⍨←ct[;1]≥md                  ⍝ Eliminate entries of less depth
+        ct[;1]-←md                      ⍝ Adjust depths
         ⎕←'Applying depth updates: ',⍕md
     :EndIf
 
     ct↑⍨←1++/∧\0≠1↓ct[;1] ⍝ //! Prune after a non-initial depth-0 //! why? -- to clean up other half of stack isolation
-    ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
+
+    ⍝ //! Revisit above with goal of restructing pruning to within a single top-level branch
 
     ⍝
     ⍝ Remove (most) whole-function header entries. We will work with line-level
@@ -92,7 +92,7 @@
 
     ⎕←('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
 
-    {}3⎕NDELETE⍣del⊢p                   ⍝ Delete previous files, if so configured; suppress output
+    {} 3 ⎕NDELETE⍣del⊢ p                ⍝ Delete previous files, if so configured; suppress output
 
     ⍝
     ⍝ Create temporary export file.
