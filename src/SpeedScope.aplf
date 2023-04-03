@@ -1,4 +1,4 @@
-{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;i;ld;fmt;spt;l;s;⎕PP;d;f;e;sp;lf;ll;write;base64enc;i8;tie;t;R_;written;_out;arg
+{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
 
     file base64 md←ctl                  ⍝ Decompose left argument: filepath/base64-flag/min-depth
 
@@ -6,7 +6,7 @@
     ⍞←'⍝ '
     ⎕PP←18
     stk←⍬
-    ld lf ll←¯1000 '' ¯1000
+    ld←¯1000
     fmt←{
         (¯1↓↑,/⌽⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
     }
@@ -14,17 +14,19 @@
     s←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
 
     :For (d f l e sp) :InEach depth fnname line elapsed s
+        f,←(¯1≠l)/'[',(⍕l),']'          ⍝ Compose function[line] (omit line if whole-function entry)
+
         :If d>ld
-            stk,⍨←⊂f,(¯1≠l)/'[',(⍕l),']'
+            stk,⍨←⊂f
         :ElseIf d<ld
             stk←(1+0.5×ld-d)↓stk
-            stk,⍨←⊂f,(¯1≠l)/'[',(⍕l),']'
+            stk,⍨←⊂f
         :Else
             ⍝59  #.Conga.LIB.Send                          4     377       7.371103391051292          35.96187336370349         1131      3770
             ⍝60  #.Conga.⍙CallRL                                 377      26.184714399278164          26.184714399278164         377       377
             ⍝60  #.Conga.LIB.check                               377       2.406055573374033           2.406055573374033        2262      2262
             ⍝61  #.Conga.LIB.check                         0     377       0.3276783972978592          0.3276783972978592        377       377
-            (⊃stk)←f,(¯1≠l)/'[',(⍕l),']'
+            (⊃stk)←f
         :EndIf
 
         :If sp>0
