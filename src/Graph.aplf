@@ -1,59 +1,87 @@
-{ctl}←Graph ctl;arg;cfg;del;file;i;ix;md;minimum;p;tfn;tie;depth;fnname;line;elapsed
+{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;h
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
 
-    ctl←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}ctl ⍝ Fetch profile results, unless provided
-    :If 0=≢⊃ctl                            ⍝ Abort if no profile data available
+    w←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w  ⍝ Fetch profile results, unless provided
+
+    :If 0=≢⊃w                           ⍝ Abort if no profile data available
         ⎕←'No profile data!'
         :Return
     :EndIf
 
+    ct←⍉↑w                              ⍝ Convert to call tree matrix
+
     ⍝
-    ⍝ At this point, ctl is a list of vectors composed as follows:
+    ⍝ At this point,  ct  is the call tree matrix with columns as follows:
     ⍝   [1] depth level
     ⍝   [2] function name
-    ⍝   [3] function line number
+    ⍝   [3] function line number -- note that whole-function entries are ¯1, not ⍬
     ⍝   [4] exclusive accumulated time (ms)
     ⍝
 
     ⍝
-    ⍝ Determine if call stack pruning heuristic is to be used. //! Flesh out details
+    ⍝ Apply call tree pruning heuristics.
     ⍝
-    md←0                                ⍝ Assume no depth-pruning
+    ⍝ Reasons why pruning the call tree may be advantageious include:
+    ⍝   - Focusing on areas of particular interest to the user.
+    ⍝   - Reducing the size of the export file. Speedscope has been observed
+    ⍝     to fail on files larger than ~500MB, and since the function names of
+    ⍝     the entire stack are repeated for every leaf node entry (and we're
+    ⍝     doing line-level!), eliminating uninteresting areas of the tree (e.g. a
+    ⍝     common root) can have a huge impact.
+    ⍝   - Eliminating any contributions of this tool apparent when profiling
+    ⍝     was initiated under our aegis.
+    ⍝
+    md←0                                ⍝ Assume no depth-based pruning
 
     :If 0<≢tfn←cfg.topFn                ⍝ If function-level pruning requested...
         tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn     ⍝ Assume root NS if not explicit
-        ix←0⌈¯1+⊃⍸(2⊃ctl)≡¨⊂tfn         ⍝ (I)nde(x) of function's first occurence
-        ctl←ix↓¨ctl                     ⍝ Remove entries before it
-        md←0⌈⊃⊃ctl                      ⍝ Record depth of new starting point, to adjust later
+        ix←0⌈¯1+⊃⍸ct[;2]≡¨⊂tfn          ⍝ (I)nde(x) of function's first occurence
+        ct↓⍨←ix                         ⍝ Remove entries before it
+        md←0⌈⊃ct                        ⍝ Record depth of new starting point, to adjust later
         ⎕←'Pruning outside of ',tfn
-    :ElseIf 0<i←1++/∧\0=4⊃ctl ⍝ //! Figure this one out (prunes leading 0's)
-        ⍝ Remove entries that were on the stack when profiling started (exlusive time 0)//!
-        ⍝ Mention to SL //!
-        md←i⊃⊃ctl
+    :Else
+        ⍝
+        ⍝ If no explicit pruning point was requested, we will attempt to remove
+        ⍝ any entries that were on the stack when profiling started. The
+        ⍝ heuristic used to identify those is an own-elapsed time of zero at the
+        ⍝ very root of the call tree.
+        ⍝
+        ix←1++/∧\0=ct[;4]               ⍝ (I)nde(x) of first entry with non-zero elaspsed time
+        md←ct[ix;1]                     ⍝ Record depth of new starting point, to adjust later
         ⎕←'Removing leading entries'
     :EndIf
 
 
-    ⍝ //! Rough application of min-depth
-
-    depth fnname line elapsed←ctl ⍝ //! Also remove localizations
-
     ⍝
-    ⍝ minimum depth: remove the crud to make the file smaller
+    ⍝ Perform depth-based pruning.
     ⍝
     :If md≠0
-        depth fnname line elapsed⌿⍨←⊂depth≥md
-        depth-←md
+        ct⌿⍨←ct[;1]≥md
+        ct[;1]-←md
+        ⎕←'Applying depth updates: ',⍕md
     :EndIf
 
-    depth fnname line elapsed↑⍨←1++/∧\0≠1↓depth ⍝ //! Prune after a non-initial depth-0
-    fnname trimPfx⍨←'#.'                ⍝ Trim root namespace indicators
-    depth fnname line elapsed⌿⍨←⊂(1=2|depth)∨(line=¯1)∧1,⍨2≢/fnname ⍝ Remove top level entries //! Even depths, or ¯1 lines even when function doesn't change (probably for some stored format)
-    depth+←line=¯1                      ⍝ Convert ¯1's to 0's
+    ct↑⍨←1++/∧\0≠1↓ct[;1] ⍝ //! Prune after a non-initial depth-0 //! why? -- to clean up other half of stack isolation
+    ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
 
-    ctl←depth fnname line elapsed
-    ⍝ //!
+    ⍝
+    ⍝ Remove (most) whole-function header entries. We will work with line-level
+    ⍝ data.
+    ⍝
+    ⍝ In some circumstances ⎕PROFILE will provide whole-function entries that
+    ⍝ aren't followed by line-level entries. In this author's experience, this
+    ⍝ behaviour occurs in multi-threaded scenarios where accrued time costs are
+    ⍝ implausible; thus undermining the value of the collected data. But others
+    ⍝ have had more promising experiences, so we will retain these entries and
+    ⍝ include them in the export.
+    ⍝
+    h←~2|ct[;1]                         ⍝ Create mask of function header entries
+    ct[⍸h;1]+←1                         ⍝ Increase header entry depth for consistency with peers (relevant to retained headers)
+    h∧←1,⍨2≡/ct[;2]                     ⍝ Exclude anomalous singleton header entries from purging
+    ct⌿⍨←~h                             ⍝ Purge normal headers
+
+    ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.
@@ -75,7 +103,7 @@
     file←⊃0 ⎕NINFO tie                  ⍝ Pick up randomized filename
     ⎕NUNTIE tie
 
-    file 1 md SpeedScope ctl            ⍝ Perform export
+    file 1 md SpeedScope ↓⍉ct           ⍝ Perform export
 
     ⍝
     ⍝ Launch speedscope in browser.
