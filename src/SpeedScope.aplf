@@ -11,25 +11,7 @@
         (¯1↓↑,/⌽⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
     }
 
-    :If 0
-        spt←{
-            ⍝ ⍺=valori ⍵=profondità ramo
-            r←(¯1+⌈/1,⍵),⍴⍵
-            m←¯1 0↓(1-⍵)⊖1⍪r⍴0
-            b←,∧⍀~m
-            i←(,m){(⍺/⍵)[+\⍺]},(⍴m)⍴⍳¯1↑⍴m
-            x←⌈⌿(⍴m)⍴i×b
-            f←0=2|⍵
-            k←x×f
-            tot←⍺
-            tot[f/x]-←f/⍺
-            tot
-        }
-        s←0⌈(⌈1000000×elapsed)spt 1+depth
-    :Else
-        ⍝ the timings in SpeedScope are displayed in microseconds
-        s←0⌈⌈1000000×elapsed
-    :EndIf
+    s←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
 
     :For (d f l e sp) :InEach depth fnname line elapsed s
         :If d>ld
