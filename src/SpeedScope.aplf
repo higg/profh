@@ -5,7 +5,7 @@
     stk←⍬
     ld←¯1000
     fmt←{
-        (¯1↓↑,/⌽⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
+        (¯1↓↑,/⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
     }
 
     elapsed←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
@@ -14,16 +14,16 @@
         f,←(¯1≠l)/'[',(⍕l),']'          ⍝ Compose function[line] (omit line if whole-function entry)
 
         :If d>ld
-            stk,⍨←⊂f
+            stk,←⊂f
         :ElseIf d<ld
             stk←(1+0.5×ld-d)↓stk
-            stk,⍨←⊂f
+            stk,←⊂f
         :Else
             ⍝59  #.Conga.LIB.Send                          4     377       7.371103391051292          35.96187336370349         1131      3770
             ⍝60  #.Conga.⍙CallRL                                 377      26.184714399278164          26.184714399278164         377       377
             ⍝60  #.Conga.LIB.check                               377       2.406055573374033           2.406055573374033        2262      2262
             ⍝61  #.Conga.LIB.check                         0     377       0.3276783972978592          0.3276783972978592        377       377
-            (⊃stk)←f
+            (⊃⌽stk)←f
         :EndIf
 
         :If e>0
