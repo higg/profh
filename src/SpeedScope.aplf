@@ -1,4 +1,4 @@
-{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
+{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;l;s;⎕PP;d;f;e;_out
     _out←⎕NEW Writer(file 1)
     ⍞←'⍝ '
     ⎕PP←18
@@ -8,9 +8,9 @@
         (¯1↓↑,/⌽⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
     }
 
-    s←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
+    elapsed←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
 
-    :For (d f l e sp) :InEach depth fnname line elapsed s
+    :For (d f l e) :InEach depth fnname line elapsed
         f,←(¯1≠l)/'[',(⍕l),']'          ⍝ Compose function[line] (omit line if whole-function entry)
 
         :If d>ld
@@ -26,8 +26,8 @@
             (⊃stk)←f
         :EndIf
 
-        :If sp>0
-        :AndIf _out.Write sp fmt stk    ⍝ Write partial
+        :If e>0
+        :AndIf _out.Write e fmt stk     ⍝ Write partial
             ⍞←'○'
         :EndIf
 
