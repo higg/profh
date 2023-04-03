@@ -4,9 +4,8 @@
     ⎕PP←18
     stk←⍬
     ld←¯1000
-    fmt←{
-        (¯1↓↑,/⍵,¨';'),' ',⍕⍺ ⍝ //! Was vtol
-    }
+
+    fmt←{(¯1↓↑,/⍵,¨';'),' ',⍕⍺}         ⍝ Formats call tree entry for export file: f1;f2;f3 time
 
     elapsed←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
 
