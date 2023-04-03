@@ -1,6 +1,6 @@
-{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;md;stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
+{file}←ctl SpeedScope(depth fnname line elapsed);file;base64;stk;ld;fmt;l;s;⎕PP;d;f;e;sp;_out
 
-    file base64 md←ctl                  ⍝ Decompose left argument: filepath/base64-flag/min-depth
+    file base64←ctl                     ⍝ Decompose left argument: filepath, base64-flag
 
     _out←⎕NEW Writer(file base64)
     ⍞←'⍝ '
