@@ -48,7 +48,7 @@
      
         :If _base64
             _tie←_file ⎕NCREATE 0
-            writeutf8'speedscope.loadFileFromBase64("Dyalog_Perf.collapsedstack.txt","77u/'
+            writeutf8'speedscope.loadFileFromBase64("',##.PKG_NM,'","77u/'
         :EndIf
     ∇
 
@@ -92,7 +92,7 @@
         :Trap 0
             Close ⍬
         :Else
-            ⎕←'⍝ '⎕DMX
+            ⎕←'Error closing export file: '⎕DMX
         :EndTrap
     ∇
 
