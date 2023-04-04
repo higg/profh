@@ -1,41 +1,70 @@
-{file}←file SpeedScope(depth fnname line elapsed);stk;ld;fmt;⎕PP;d;f;l;e;_out
-    _out←⎕NEW Writer(file 1)
-    ⍞←'⍝ '
-    ⎕PP←18
-    stk←⍬
-    ld←¯1000
+{file}←file SpeedScope(depth fnname line elapsed);W;emit;stk;ld;⎕PP;d;f;l;e
 
-    fmt←{(¯1↓↑,/⍵,¨';'),' ',⍕⍺}         ⍝ Formats call tree entry for export file: f1;f2;f3 time
+    W←⎕NEW Writer(file 1)               ⍝ Instantiate file writer (and encoder)
+    emit←W.Write⍤{(¯1↓↑,/⍺,¨';'),' ',⍕⍵}⍝ Formats and emits call tree entry
+
+    ⎕PP←18 ⍝ //!?
 
     elapsed←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
 
+    ⍝
+    ⍝ Convert the incoming call tree data to Brendan Gregg's collapsed stack
+    ⍝ format used by speedscope. Each line represents a node on the call tree,
+    ⍝ and consists of a semicolon-spearated list of functions in the call stack
+    ⍝ (from root to leaf), followed by the weight for that line. For example:
+    ⍝
+    ⍝ main;a;b;c 1
+    ⍝ main;a;b;c 1
+    ⍝ main;a;b;d 4
+    ⍝ main;a;b;e 3
+    ⍝ main;a;b 5
+    ⍝
+    ⍝ For more details, see:
+    ⍝
+    ⍝ https://github.com/jlfwong/speedscope/wiki/Importing-from-custom-sources#brendan-greggs-collapsed-stack-format
+    ⍝
+    ⍝ Note that we treat each line of a function as a separate node in the call
+    ⍝ tree. For example:
+    ⍝
+    ⍝ main[1];a[1];b[1]; 1
+    ⍝ main[1];a[1];b[1];c[1] 1
+    ⍝ main[1];a[1];b[1];c[2] 1
+    ⍝ main[1];a[1];b[2]; 1
+    ⍝ main[1];a[1];b[2];d[1] 4
+    ⍝ main[1];a[1];b[3]; 1
+    ⍝ main[1];a[1];b[3];e[1] 3
+    ⍝ main[1];a[1];b[4] 5
+    ⍝
+    ⍝ To accomplish this, we will iterate over the nodes of the incoming call
+    ⍝ tree data, maintaining a vector of strings representing the root-to-leaf
+    ⍝ path of the current node. This vector is streated as as stack.
+    ⍝
+    stk←⍬                               ⍝ The stack
+    ld←¯1+⊃depth                        ⍝ (L)ast (d)epth--depth of previous entry
+
     :For (d f l e) :InEach depth fnname line elapsed
-        f,←(¯1≠l)/'[',(⍕l),']'          ⍝ Compose function[line] (omit line if whole-function entry)
+        ⍝
+        ⍝ Pop appropriate entries off stack.
+        ⍝
+        ⍝ There are three possible scenarios:
+        ⍝   1) Current is one level deeper than previous: pop none; previous is parent
+        ⍝   2) Current is peer of previous (same depth): pop one to common parent
+        ⍝   3) Current is above previous (calls unwinding): pop to parent of new depth
+        ⍝
+        stk↓⍨←0⌊d-ld+1                  ⍝ Calculate and pop
 
-        :If d>ld
-            stk,←⊂f
-        :ElseIf d<ld
-            stk←(-1+ld-d)↓stk
-            stk,←⊂f
-        :Else
-            ⍝59  #.Conga.LIB.Send                          4     377       7.371103391051292          35.96187336370349         1131      3770
-            ⍝60  #.Conga.⍙CallRL                                 377      26.184714399278164          26.184714399278164         377       377
-            ⍝60  #.Conga.LIB.check                               377       2.406055573374033           2.406055573374033        2262      2262
-            ⍝61  #.Conga.LIB.check                         0     377       0.3276783972978592          0.3276783972978592        377       377
-            (⊃⌽stk)←f
-        :EndIf
+        ⍝
+        ⍝ Push current entry onto stack.
+        ⍝
+        f,←(¯1≠l)/'[',(⍕l),']'          ⍝ Compose function[line], omitting [line] if whole-function entry
+        stk,←⊂f                         ⍝ Push
 
-        :If e>0
-        :AndIf _out.Write e fmt stk     ⍝ Write partial
-            ⍞←'○'
-        :EndIf
-
-    ld←d
+        {}stk(emit⍣(e>0))e              ⍝ Format and emit entry, unless no own-time recorded
+        ld←d                            ⍝ Keep current depth for next iteration
     :EndFor
 
-    :If _out.Flush 1
-        ⍞←'file probably too big'
+    :If W.Flush 1
+        ⎕←'File probably too big'
     :EndIf
 
-    ⍞←'∘'
-    _out.Close ⍬
+    W.Close ⍬
