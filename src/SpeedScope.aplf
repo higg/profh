@@ -1,11 +1,8 @@
-{file}←file SpeedScope(depth fnname line elapsed);W;emit;stk;ld;⎕PP;d;f;l;e
+{file}←file SpeedScope(depth fnname line elapsed);W;fmt;emit;stk;ld;scale;d;f;l;e
 
-    W←⎕NEW Writer(file 1)               ⍝ Instantiate file writer (and encoder)
-    emit←W.Write⍤{(¯1↓↑,/⍺,¨';'),' ',⍕⍵}⍝ Formats and emits call tree entry
 
-    ⎕PP←18 ⍝ //!?
-
-    elapsed←0⌈⌈1000000×elapsed ⍝ The timings in SpeedScope are displayed in microseconds //! Is that right?
+    scale←1000                          ⍝ Display in microseconds //! Configure
+    elapsed←0⌈⌈scale×elapsed            ⍝ Scale timings (from milliseconds)
 
     ⍝
     ⍝ Convert the incoming call tree data to Brendan Gregg's collapsed stack
@@ -41,6 +38,10 @@
     ⍝
     stk←⍬                               ⍝ The stack
     ld←¯1+⊃depth                        ⍝ (L)ast (d)epth--depth of previous entry
+    W←⎕NEW Writer(file 1)               ⍝ Instantiate file writer (and encoder)
+
+    fmt←{(¯1↓↑,/⍺,¨';'),' ',⍕⍵}         ⍝ Formats call tree entry; ⍺:stack ⍵:weight
+    emit←W.Write⍤fmt                    ⍝ Formats and emits call tree entry
 
     :For (d f l e) :InEach depth fnname line elapsed
         ⍝
@@ -64,7 +65,7 @@
     :EndFor
 
     :If W.Flush 1
-        ⎕←'File probably too big'
+        ⎕←'Warning: file probably too big'
     :EndIf
 
-    W.Close ⍬
+    W.Close ⍬                           ⍝ Close file handle
