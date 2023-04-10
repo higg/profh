@@ -92,7 +92,7 @@
         :Trap 0
             Close ⍬
         :Else
-            ⎕←'Error closing export file: '⎕DMX
+            out'Error closing export file: '⎕DMX
         :EndTrap
     ∇
 
