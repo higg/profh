@@ -1,7 +1,7 @@
 :Namespace Profile
 
     clear←{                             ⍝ Clears ⎕PROFILE's buffer (ignores argument)
-        ⎕←'Clearing previous ⎕PROFILE buffer contents'
+        _←##.out 'Clearing previous ⎕PROFILE buffer contents'
         ⎕PROFILE 'clear'
     }
 
@@ -23,11 +23,17 @@
         clear⍣(isClear<×⊃flags)⊢⍬       ⍝ Clear buffer if requested and required
         t←⊃'elapsed' 'cpu'⌷⍨1+2⌷flags   ⍝ Determine profiling type
         ⎕PROFILE 'start' t              ⍝ Start profiling
-        {}⍎¨↓↑expr                      ⍝ Evaluate expression(s), suppress results 
+        {}_eval↓↑expr                   ⍝ Evaluate expression(s), suppress results
         ⎕PROFILE 'stop'                 ⍝ Stop profiling
     ∇
 
-    ⍝ //! Isloate eval
+    ⍝
+    ⍝ Evaluates each of given list of expressions.
+    ⍝
+    ⍝ This function exists primarily to provide an obvious entry in the call
+    ⍝ tree which can be isolated and pruned. DO NOT CHANGE ITS NAME!
+    ⍝
+    _eval←{⍎¨⍵}
 
 
     ⍝
@@ -65,7 +71,7 @@
     }
 
 
-    ⍝ April 2023
+    ⍝ April 2023 ⍝ //!
 
     ⍝ treesUnder tool entry point
     ⍝ subtree of configured function of focus
@@ -76,7 +82,23 @@
     ⍝
 
     ⍝
-    ⍝ Returns the subtree at specified index (⍺) of given call tree matrix (⍵). 
+    ⍝ Prunes given call tree to include only entries strictly invoked under the
+    ⍝ _eval function of this tool.
+    ⍝
+    trimSelf←{
+        i←⍵ find⍨'._eval',⍨⍕⎕THIS       ⍝ Find node where tool invokes user code
+        i treesUnder ⍵                  ⍝ Isolate user code
+    }
+
+    ⍝
+    ⍝ Finds index of function (⍺)'s first occurence in call tree matrix (⍵).
+    ⍝
+    find←{
+        1⍳⍨⍵[;2]≡¨⊂⍺
+    }
+
+    ⍝
+    ⍝ Isolates subtree at specified index (⍺) of given call tree matrix (⍵).
     ⍝
     subtree←{
         d←⍵[⍺;1]                        ⍝ (D)epth of subtree in situ
@@ -85,11 +107,12 @@
     }
 
     ⍝
-    ⍝ Returns all children of the node at specified index (⍺) of given call tree
-    ⍝ matrix (⍵). 
+    ⍝ Returns all children of node at specified index (⍺) of given call tree
+    ⍝ matrix (⍵).
     ⍝
     treesUnder←{
         t←⍺ subtree ⍵                   ⍝ Isolate subtree
+        t≡⍥≢⍵ : ⍵                       ⍝ Stop if unaltered (performance tweak)
         _adjDepth t⌿⍨t[;1]>1            ⍝ Remove root level, fix children's depths
     }
 
@@ -99,6 +122,8 @@
     ⍝ Assumes in the input is a matrix representing a single tree, or multiple
     ⍝ trees whose roots are at equal depth.
     ⍝
-    _adjDepth←{⍉-∘(⊃⍵)@1⊢⍉⍵}
+    _adjDepth←{
+        ⍉-∘(⊃⍵)@1⊢⍉⍵
+    }
 
 :EndNamespace
