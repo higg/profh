@@ -1,5 +1,6 @@
 :Namespace Utils
     ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
+    ##.out←{⍞←(×≢⍵)/⍵,⎕UCS 10}          ⍝ Emits given string to output, unless empty
 
     update←{                            ⍝ Updates intersecting fields from dict ⍵ to ⍺
         i←⊃∩/{keys ⍵}¨⍺ ⍵               ⍝ Find intersecting fields
@@ -25,7 +26,7 @@
     ⍝ Pluralization helpers.
     ⍝
     _plural←{(⊃⍣(~≢⍴⍵))⍺⌷⍨⊂1+1≠⍵}       ⍝ Indexes into singular/plural suffices (⍺) by oridnalities (⍵)
-    ##.ps←''(,'s')∘_plural              ⍝ Returns default English pluralization suffix string based on input count (⍵)   
+    ##.ps←''(,'s')∘_plural              ⍝ Returns default English pluralization suffix string based on input count (⍵)
 
     ⍝
     ⍝ --- Lifted from dfns workspace ------------------------------------------
