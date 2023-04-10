@@ -78,7 +78,7 @@
     ⍝
 
     
-    __speedscope←{
+    __Speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D,' '
@@ -166,9 +166,9 @@
     ∇
 
     ∇ speedscope input;e;f
-        e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
         f←1 ##.NS.Config.Curr.cpu       ⍝ Profiling (f)lags
-        f(##.NS.Profile.prof⍣(×≢e))e    ⍝ If so, profile expressions, clearing previous profile data
+        e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
+        {}f(##.NS.Profile.prof⍣(×≢e))e  ⍝ If so, profile expressions, clearing previous profile data
         ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
     ∇
 
