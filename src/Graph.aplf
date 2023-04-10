@@ -1,23 +1,21 @@
-{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;h
+{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;c;h;b
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
-
     w←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w  ⍝ Fetch profile results, unless provided
 
     :If 0=≢⊃w                           ⍝ Abort if no profile data available
-        ⎕←'No profile data!'
+        out 'ERROR: No profile data!'
         :Return
     :EndIf
 
-    ct←⍉↑w                              ⍝ Convert to call tree matrix
-
     ⍝
-    ⍝ At this point,  ct  is the call tree matrix with columns as follows:
+    ⍝ Convert data to call tree matrix with columns as follows:
     ⍝   [1] depth level
     ⍝   [2] function name
     ⍝   [3] function line number -- note that whole-function entries are ¯1, not ⍬
     ⍝   [4] exclusive accumulated time (ms)
     ⍝
+    ct←⍉↑w                              ⍝ Convert to call tree matrix
 
     ⍝
     ⍝ Apply call tree pruning heuristics.
@@ -29,17 +27,19 @@
     ⍝     the entire stack are repeated for every leaf node entry (and we're
     ⍝     doing line-level!), eliminating uninteresting areas of the tree (e.g. a
     ⍝     common root) can have a huge impact.
-    ⍝   - Eliminating any contributions of this tool apparent when profiling
+    ⍝   - Eliminating any contributions from this tool apparent when profiling
     ⍝     was initiated under our aegis.
     ⍝
-    md←0                                ⍝ Assume no depth-based pruning
+    c←≢ct                               ⍝ Record original count
+    ct←Profile.trimSelf ct              ⍝ Remove the impact of this tool
 
-    :If 0<≢tfn←cfg.topFn                ⍝ If function-level pruning requested...
+    :If ×≢tfn←cfg.topFn                 ⍝ If function-level pruning requested...
         tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn     ⍝ Assume root NS if not explicit
-        ix←0⌈¯1+⊃⍸ct[;2]≡¨⊂tfn          ⍝ (I)nde(x) of function's first occurence
-        ct↓⍨←ix                         ⍝ Remove entries before it
-        md←0⌈⊃ct                        ⍝ Record depth of new starting point, to adjust later
-        ⎕←'Pruning outside of ',tfn
+        out 'Isolating ',tfn
+        ix←tfn Profile.find ct          ⍝ (I)nde(x) of function's first occurence
+        b←ix<≢ct                        ⍝ Flag if found
+        out (~b)/'Warning: Function ',tfn,' not found in call tree. Pruning aborted.'
+        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune
     :Else
         ⍝
         ⍝ If no explicit pruning point was requested, we will attempt to remove
@@ -48,22 +48,10 @@
         ⍝ very root of the call tree.
         ⍝
         ix←1++/∧\0=ct[;4]               ⍝ (I)nde(x) of first entry with non-zero elaspsed time
-        md←ct[ix;1]                     ⍝ Record depth of new starting point, to adjust later
-        ⎕←'Removing leading entries'
+        b←ix>1                          ⍝ Flag if any pruning to be done
+        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune (maybe)
+        out b/'Focusing under ',ct[ix;2]
     :EndIf
-
-    ⍝
-    ⍝ Perform depth-based pruning.
-    ⍝
-    :If md≠0                            ⍝ Skip if no-op (for performance)
-        ct⌿⍨←ct[;1]≥md                  ⍝ Eliminate entries of less depth
-        ct[;1]-←md                      ⍝ Adjust depths
-        ⎕←'Applying depth updates: ',⍕md
-    :EndIf
-
-    ct↑⍨←1++/∧\0≠1↓ct[;1] ⍝ //! Prune after a non-initial depth-0 //! why? -- to clean up other half of stack isolation
-
-    ⍝ //! Revisit above with goal of restructing pruning to within a single top-level branch
 
     ⍝
     ⍝ Remove (most) whole-function header entries. We will work with line-level
@@ -98,7 +86,7 @@
     3 ⎕MKDIR TEMP_DIR                   ⍝ Create temporary directory, if needed
     p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/speedscope_*.js' ⍝ Identify previous export files
 
-    ⎕←('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
+    out ('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
 
     {} 3 ⎕NDELETE⍣del⊢ p                ⍝ Delete previous files, if so configured; suppress output
 
