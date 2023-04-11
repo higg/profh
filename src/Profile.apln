@@ -19,11 +19,11 @@
     ⍝   [1] indicates if previous ⎕PROFILE data should be cleared
     ⍝   [2] indicates if profiling should use CPU timer, otherwise uses elapsed time
     ⍝
-    ∇ flags prof expr ;t
+    ∇ r ← flags prof expr ;t
         clear⍣(isClear<×⊃flags)⊢⍬       ⍝ Clear buffer if requested and required
         t←⊃'elapsed' 'cpu'⌷⍨1+2⌷flags   ⍝ Determine profiling type
         ⎕PROFILE 'start' t              ⍝ Start profiling
-        {}_eval↓↑expr                   ⍝ Evaluate expression(s), suppress results
+        r←_eval↓↑expr                   ⍝ Evaluate expression(s), suppress results
         ⎕PROFILE 'stop'                 ⍝ Stop profiling
     ∇
 
@@ -31,54 +31,19 @@
     ⍝ Evaluates each of given list of expressions.
     ⍝
     ⍝ This function exists primarily to provide an obvious entry in the call
-    ⍝ tree which can be isolated and pruned. DO NOT CHANGE ITS NAME!
+    ⍝ tree which can be isolated and pruned. DO NOT CHANGE ITS NAME! (Or succumb
+    ⍝ to the temptation to redefine it tacitly!)
     ⍝
     _eval←{⍎¨⍵}
 
 
     ⍝
-    ⍝ Determines the trim point in given profile data set (⍵) in relation to
-    ⍝ a given function name (⍺).
-    ⍝
-    ⍝ By default, the trim point sits before the first occurrence of ⍺ in ⍵. But
-    ⍝ if ⍺ is provided as a pair whose second value is 1, the trim point occurrs
-    ⍝ after the first occurrence of ⍵ on the stack. In summary:
-    ⍝
-    ⍝   (⍺≡ "fn")∨(⍺≡"fn" 0) → fn is retained after trimming 
-    ⍝              ⍺≡"fn" 1  → fn is purged after trimming
-    ⍝
-    ⍝ ⍵ is expected to be a list of columns consistent with the results of
-    ⍝ 1 2 3 5⎕PROFILE'tree'.
-    ⍝
-    ⍝ The result is the number of records to drop from ⍵.
-    ⍝
-    findTrim←{
-        fn pur←2↑⍺,0                    ⍝ Split input, applying default
-
-        h←(⊂fn)≡¨2⊃⍵                    ⍝ Hit vector for function of interest
-        p←2↑⍸2≠/0,h                     ⍝ Pair first hit and subsequent miss, else 0's
-        0⌈¯1+p⊃⍨1+pur                   ⍝ Pick appropriate cut point, if any
-    }
-
-
-    applyTrim←{
-        ⍝//! guard early exit for performance
-        r←⍺↓¨⍵                          ⍝ Do the drop
-        d←⊃⍴                            ⍝ Depths
-        d-←⊃d←⊃r                        ⍝ Shift depths to new start point
- 
-        ⍝ Adjust the depth
-    }
-
-
-    ⍝ April 2023 ⍝ //!
-
-    ⍝ treesUnder tool entry point
-    ⍝ subtree of configured function of focus
-    ⍝ treesUnder initial-zero sequence
-
-    ⍝
     ⍝ --- Tree-pruning helpers -------------------------------------------------
+    ⍝
+    ⍝ The functions in this section all work on call tree matrices as consistent
+    ⍝ with the return of  ⎕PROFILE'tree' . Note that only the first two columns
+    ⍝ are refererenced in these routines, so a matrix composed of any subset of
+    ⍝ columns will still work, provided the first two are intact. 
     ⍝
 
     ⍝
@@ -87,6 +52,7 @@
     ⍝
     trimSelf←{
         i←⍵ find⍨'._eval',⍨⍕⎕THIS       ⍝ Find node where tool invokes user code
+        i>≢⍵ : ⍵                        ⍝ Leave whole if not found
         i treesUnder ⍵                  ⍝ Isolate user code
     }
 
