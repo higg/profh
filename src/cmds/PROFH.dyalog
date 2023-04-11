@@ -82,16 +82,16 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D,' '
-        ⍵.Parse,←'-topFn= -cpu'
+        ⍵.Parse,←'-topFn= -cpu -msScale∊¯.e',⎕D,' '
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
 
-            h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party'
-            h[0],←⊂⊂'interactive flame graph visualization tool.'
+            h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party,'
+            h[0],←⊂⊂'fully-local, interactive flame graph visualization tool.'
             h[0],←⊂⊂''
             h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-cpu]'
-            h[0],←⊂⊂'       [-keepTemp] [-topFn=<value>]  [-zoom=<num>]'
+            h[0],←⊂⊂'       [-keepTemp] [-msScale=<num>] [-topFn=<value>] [-zoom=<num>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -119,6 +119,13 @@
             h[1],←⊂⊂'                   previous invocations are retained. Otherwise they are'
             h[1],←⊂⊂'                   deleted.'
             h[1],←⊂⊂''
+            h[1],←⊂⊂'-msScale=<num>     Specifies the scaling factor applied at presentation of'
+            h[1],←⊂⊂'                   millisecond timing values collected by ⎕PROFILE. After'
+            h[1],←⊂⊂'                   values are scaled they are rounded up to the nearest'
+            h[1],←⊂⊂'                   integer, as speedscope only displays whole numbers.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   The default value is 1000, and results in timings being'
+            h[1],←⊂⊂'                   displayed in microseconds.'
             h[1],←⊂⊂''
             h[1],←⊂⊂'-topFn=<value>     Specifies the name of the function to use as the top-level'
             h[1],←⊂⊂'                   of the profile. Any stack activity not invoked by the given'

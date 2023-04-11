@@ -11,6 +11,7 @@
     Default.showCmd         ←0          ⍝ If set, displays external command before execution
     Default.zoom            ←0          ⍝ HtmlRenderer zoom level
     Default.topFn           ←''         ⍝ Explicit top-level function (prune above)
+    Default.msScale         ←1000       ⍝ Scaling factor applied to millisecond timing values for presentation
 
     Curr←Default                        ⍝ Holds configuration used at runtime
     srcDir←''                           ⍝ Package source directory (assigned later)

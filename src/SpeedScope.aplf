@@ -1,14 +1,14 @@
-{file}←file SpeedScope(depth fnname line elapsed);W;fmt;emit;stk;ld;scale;d;f;l;e
+{file}←file SpeedScope(depth fnname line elapsed);W;fmt;emit;stk;ld;d;f;l;e
 
-
-    scale←1000                          ⍝ Display in microseconds //! Configure
-    elapsed←0⌈⌈scale×elapsed            ⍝ Scale timings (from milliseconds)
+    elapsed←0⌈⌈Config.Curr.msScale×elapsed  ⍝ Scale timings (from milliseconds)
 
     ⍝
     ⍝ Convert the incoming call tree data to Brendan Gregg's collapsed stack
-    ⍝ format used by speedscope. Each line represents a node on the call tree,
-    ⍝ and consists of a semicolon-spearated list of functions in the call stack
-    ⍝ (from root to leaf), followed by the weight for that line. For example:
+    ⍝ format used by speedscope, and write to file.
+    ⍝
+    ⍝ Each output line represents a node on the call tree, and consists of a
+    ⍝ semicolon-spearated list of functions in the call stack (from root to
+    ⍝ leaf), followed by the weight for that line. For example:
     ⍝
     ⍝ main;a;b;c 1
     ⍝ main;a;b;c 1
