@@ -1,4 +1,4 @@
-{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;c;h;b
+{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;h;b
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
     w←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w  ⍝ Fetch profile results, unless provided
@@ -30,7 +30,6 @@
     ⍝   - Eliminating any contributions from this tool apparent when profiling
     ⍝     was initiated under our aegis.
     ⍝
-    c←≢ct                               ⍝ Record original count
     ct←Profile.trimSelf ct              ⍝ Remove the impact of this tool
 
     :If ×≢tfn←cfg.topFn                 ⍝ If function-level pruning requested...
@@ -53,6 +52,7 @@
         out b/'Focusing under ',ct[ix;2]
     :EndIf
 
+    ⍝//! Move into Profile?
     ⍝
     ⍝ Remove (most) whole-function header entries. We will work with line-level
     ⍝ data.
