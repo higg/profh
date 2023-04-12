@@ -1,4 +1,4 @@
-{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;h;b
+{ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;b
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
     w←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w  ⍝ Fetch profile results, unless provided
@@ -38,7 +38,7 @@
         ix←tfn Profile.find ct          ⍝ (I)nde(x) of function's first occurence
         b←ix<≢ct                        ⍝ Flag if found
         out (~b)/'Warning: Function ',tfn,' not found in call tree. Pruning aborted.'
-        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune
+        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if found
     :Else
         ⍝
         ⍝ If no explicit pruning point was requested, we will attempt to remove
@@ -48,36 +48,12 @@
         ⍝
         ix←1++/∧\0=ct[;4]               ⍝ (I)nde(x) of first entry with non-zero elaspsed time
         b←ix>1                          ⍝ Flag if any pruning to be done
-        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune (maybe)
+        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if needed
         out b/'Focusing under ',ct[ix;2]
     :EndIf
 
-    ⍝//! Move into Profile?
-    ⍝
-    ⍝ Remove (most) whole-function header entries. We will work with line-level
-    ⍝ data.
-    ⍝
-    ⍝ In some circumstances ⎕PROFILE will provide whole-function entries that
-    ⍝ aren't followed by line-level entries. In this author's experience, this
-    ⍝ behaviour occurs in multi-threaded scenarios where accrued time costs are
-    ⍝ implausible; thus undermining the value of the collected data. But others
-    ⍝ have had more promising experiences, so we will retain these entries and
-    ⍝ include them in the export.
-    ⍝
-    ⍝ An observed example of this phenomenon is shown below:
-    ⍝
-    ⍝   59  #.Conga.LIB.Send   4  377   7.371103391051292   35.96187336370349    1131  3770
-    ⍝   60  #.Conga.⍙CallRL       377  26.184714399278164   26.184714399278164    377   377
-    ⍝   60  #.Conga.LIB.check     377   2.406055573374033    2.406055573374033   2262  2262
-    ⍝   61  #.Conga.LIB.check  0  377   0.3276783972978592   0.3276783972978592   377   377
-    ⍝
-    h←~2|ct[;1]                         ⍝ Create mask of function header entries
-    ct[⍸h;1]+←1                         ⍝ Increase header entry depth for consistency with peers (relevant to retained headers)
-    h∧←1,⍨2≡/ct[;2]                     ⍝ Exclude anomalous singleton header entries from purging
-    ct⌿⍨←~h                             ⍝ Purge normal headers
-
+    ct←Profile.removeHeaders ct         ⍝ Remove whole-function header entries
     ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
-    ct[;1](÷∘2⍤-)←1                     ⍝ Adjust depths to start at zero and increment by 1
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.
@@ -88,7 +64,7 @@
 
     out ('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
 
-    {} 3 ⎕NDELETE⍣del⊢ p                ⍝ Delete previous files, if so configured; suppress output
+    {}3 ⎕NDELETE⍣del⊢p                  ⍝ Delete previous files, if so configured; suppress output
 
     ⍝
     ⍝ Create temporary export file.
