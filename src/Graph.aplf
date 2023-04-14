@@ -60,7 +60,7 @@
     ⍝
     del←~cfg.keepTemp                   ⍝ Decide if deleting
     3 ⎕MKDIR TEMP_DIR                   ⍝ Create temporary directory, if needed
-    p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/speedscope_*.js' ⍝ Identify previous export files
+    p←⊃⎕NINFO ⎕OPT 1⊢TEMP_DIR,'/ss_*.js' ⍝ Identify previous export files
 
     out ('Retaining ' 'Deleting '⊃⍨1+del),(⍕≢p),' previous export file',ps≢p
 
@@ -70,7 +70,7 @@
     ⍝ Create temporary export file.
     ⍝
     3 ⎕MKDIR TEMP_DIR                   ⍝ Create temporary directory, if needed
-    file←TEMP_DIR,'/speedscope_.js'     ⍝ Determine temporary file location and rootname
+    file←TEMP_DIR,'/ss_.js'     ⍝ Determine temporary file location and rootname
     tie←file ⎕NCREATE ⎕OPT'Unique'1 ⊢0  ⍝ Create file, appending random chars to filename
     file←⊃0 ⎕NINFO tie                  ⍝ Pick up randomized filename
     ⎕NUNTIE tie

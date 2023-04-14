@@ -81,7 +81,7 @@
     __Speedscope←{
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
-        ⍵.Parse ←'9999S -browser=chrome firefox edge -keepTemp -showCmd -zoom∊¯.',⎕D,' '
+        ⍵.Parse ←'9999S -browser=chrome firefox edge url -keepTemp -showCmd -zoom∊¯.',⎕D,' '
         ⍵.Parse,←'-topFn= -cpu -msScale∊¯.e',⎕D,' '
 
         ⍵.HelpText←{
@@ -105,10 +105,15 @@
             h[1],←⊂⊂'Modifiers:'
             h[1],←⊂⊂''
             h[1],←⊂⊂'-browser=<value>   If present, specifies the browser used to host speedscope.'
-            h[1],←⊂⊂'                   Currently, the only supported values are "chrome" "firefox"'
-            h[1],←⊂⊂'                   and "edge".'
             h[1],←⊂⊂''
-            h[1],←⊂⊂'                   If omitted, HtmlRenderer is used.'
+            h[1],←⊂⊂'                   If one of "chrome", "firefox" or "edge" is specified,'
+            h[1],←⊂⊂'                   speedscope is launched in the specified browser.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   For use with other browsers, "url" can specified. In this'
+            h[1],←⊂⊂'                   case, a local URL will be displayed which can be copied and'
+            h[1],←⊂⊂'                   used to manually navigate a browser.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   If this modifier is omitted, HtmlRenderer is used.'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-cpu               When set, profiling is based on CPU timer, otherwise elapsed'
@@ -119,6 +124,7 @@
             h[1],←⊂⊂'                   previous invocations are retained. Otherwise they are'
             h[1],←⊂⊂'                   deleted.'
             h[1],←⊂⊂''
+            h[1],←⊂⊂''
             h[1],←⊂⊂'-msScale=<num>     Specifies the scaling factor applied at presentation of'
             h[1],←⊂⊂'                   millisecond timing values collected by ⎕PROFILE. After'
             h[1],←⊂⊂'                   values are scaled they are rounded up to the nearest'
@@ -126,6 +132,7 @@
             h[1],←⊂⊂''
             h[1],←⊂⊂'                   The default value is 1000, and results in timings being'
             h[1],←⊂⊂'                   displayed in microseconds.'
+            h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-topFn=<value>     Specifies the name of the function to use as the top-level'
             h[1],←⊂⊂'                   of the profile. Any stack activity not invoked by the given'

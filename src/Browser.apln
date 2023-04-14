@@ -8,9 +8,18 @@
     ⍝
     browse←{
         b←_cfg.browser                  ⍝ Configured browser
-        l←b∘_launch ⋄ r←_render         ⍝ Invocation shorthands
-        f←l{0<≢b: ⍺⍺ ⍵ ⋄ b ⍵⍵ ⍵}r       ⍝ Choose invocation
-        f ⍵                             ⍝ Invoke
+        b≡''    : _render ⍵             ⍝ Use HTML render, if none
+        b≡'url' : _dispURL ⍵            ⍝ Display URL only, if requested
+        b _launch ⍵                     ⍝ Otherwise, launch in browser
+
+        ⍝ l←b∘_launch ⋄ r←_render         ⍝ Invocation shorthands
+        ⍝ f←l{0<≢b: ⍺⍺ ⍵ ⋄ b ⍵⍵ ⍵}r       ⍝ Choose invocation
+        ⍝ f ⍵                             ⍝ Invoke
+    }
+
+    _dispURL←{
+        ⎕←'Please direct your web browser to the following URL:'
+        ⎕←⍵
     }
 
     _render←{                           ⍝ Renders given URL in HtmlRenderer
