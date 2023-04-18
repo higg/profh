@@ -6,12 +6,12 @@
     Default←⎕NS⍬
     Default.browser         ←''         ⍝ Browser launched for web-based applications (HtmlRenderer if empty)
     Default.cpu             ←0          ⍝ Launch ⎕PROFILE in cpu mode, else elapsed
-    Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
     Default.keepTemp        ←0          ⍝ Indicates if previous temporary files should be kept rather than deleted
-    Default.showCmd         ←0          ⍝ If set, displays external command before execution
-    Default.zoom            ←0          ⍝ HtmlRenderer zoom level
-    Default.topFn           ←''         ⍝ Explicit top-level function (prune above)
+    Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
     Default.msScale         ←1000       ⍝ Scaling factor applied to millisecond timing values for presentation
+    Default.showCmd         ←0          ⍝ If set, displays external command before execution
+    Default.topFn           ←''         ⍝ Explicit top-level function (prune above)
+    Default.zoom            ←0          ⍝ HtmlRenderer zoom level
 
     Curr←Default                        ⍝ Holds configuration used at runtime
     srcDir←''                           ⍝ Package source directory (assigned later)
