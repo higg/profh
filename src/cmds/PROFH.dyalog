@@ -82,7 +82,7 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge url -keepTemp -showCmd -zoom∊¯.',⎕D,' '
-        ⍵.Parse,←'-topFn= -cpu -trimPfx= -msScale∊¯.e',⎕D,' '
+        ⍵.Parse,←'-topFn= -cpu -trimPfx= -keepCtx -msScale∊¯.e',⎕D,' '
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -91,8 +91,8 @@
             h[0],←⊂⊂'fully-local, interactive flame graph visualization tool.'
             h[0],←⊂⊂''
             h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge|url}] [-cpu]'
-            h[0],←⊂⊂'       [-keepTemp] [-msScale=<num>] [-topFn=<value>] [-trimPfx=<value]'
-            h[0],←⊂⊂'       [-zoom=<num>]'
+            h[0],←⊂⊂'       [-keepCtx] [-keepTemp] [-msScale=<num>] [-topFn=<value>]'
+            h[0],←⊂⊂'       [-trimPfx=<value] [-zoom=<num>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -121,9 +121,12 @@
             h[1],←⊂⊂'                   time. Ignored if no expression is provided'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
-            h[1],←⊂⊂'-keepTemp          When provided, any temporary export files created during'
-            h[1],←⊂⊂'                   previous invocations are retained. Otherwise they are'
-            h[1],←⊂⊂'                   deleted.'
+            h[1],←⊂⊂'-keepTemp          When set, any temporary export files created during previous'
+            h[1],←⊂⊂'                   invocations are retained. Otherwise they are deleted.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-keepCtx           When set, the heuristic to eliminate stack entries already'
+            h[1],←⊂⊂'                   present at time of profile start is disabled.'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-msScale=<num>     Specifies the scaling factor applied at presentation of'

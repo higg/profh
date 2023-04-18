@@ -39,17 +39,17 @@
         b←ix<≢ct                        ⍝ Flag if found
         out (~b)/'Warning: Function ',tfn,' not found in call tree. Pruning aborted.'
         ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if found
-    :Else
+    :ElseIf ~cfg.keepCtx
         ⍝
         ⍝ If no explicit pruning point was requested, we will attempt to remove
-        ⍝ any entries that were on the stack when profiling started. The
-        ⍝ heuristic used to identify those is an own-elapsed time of zero at the
-        ⍝ very root of the call tree.
+        ⍝ any entries that were on the stack when profiling started (unless
+        ⍝ disabled). The heuristic used to identify those is an own-elapsed time
+        ⍝ of zero at the very root of the call tree.
         ⍝
         ix←1++/∧\0=ct[;4]               ⍝ (I)nde(x) of first entry with non-zero elaspsed time
         b←ix>1                          ⍝ Flag if any pruning to be done
-        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if needed
         out b/'Focusing under ',ct[ix;2]
+        ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if needed
     :EndIf
 
     ct←Profile.removeHeaders ct         ⍝ Remove whole-function header entries
