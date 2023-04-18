@@ -1,6 +1,12 @@
 :Namespace Utils
-    ##.trimPfx←{(t∘↓¨@(⍸↑∧/⍺=¨(⍳t←≢⍺)⌷[2]¨⊂↑⍵))⍵} ⍝ Trims prefix from strings
     ##.out←{⍞←(×≢⍵)/⍵,⎕UCS 10}          ⍝ Emits given string to output, unless empty
+
+    trimPfx←{                           ⍝ Trims prefix from strings
+        0≡≢⍺ : ⍵                        ⍝ Skip the trivial case
+        l←≢⍺                            ⍝ Prefix (l)ength
+        (l∘↓¨@(⍸↑∧/⍺=¨(⍳l)⌷[2]¨⊂↑⍵))⍵   ⍝ Find matches and trim
+    }
+    ##.trimPfx←trimPfx
 
     update←{                            ⍝ Updates intersecting fields from dict ⍵ to ⍺
         i←⊃∩/{keys ⍵}¨⍺ ⍵               ⍝ Find intersecting fields
