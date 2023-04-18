@@ -82,7 +82,7 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge url -keepTemp -showCmd -zoom∊¯.',⎕D,' '
-        ⍵.Parse,←'-topFn= -cpu -msScale∊¯.e',⎕D,' '
+        ⍵.Parse,←'-topFn= -cpu -trimPfx= -msScale∊¯.e',⎕D,' '
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -90,8 +90,9 @@
             h[0],←⊂⊂'Processes collected profiling data and renders it using speedscope--a 3rd-party,'
             h[0],←⊂⊂'fully-local, interactive flame graph visualization tool.'
             h[0],←⊂⊂''
-            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge}] [-cpu]'
-            h[0],←⊂⊂'       [-keepTemp] [-msScale=<num>] [-topFn=<value>] [-zoom=<num>]'
+            h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge|url}] [-cpu]'
+            h[0],←⊂⊂'       [-keepTemp] [-msScale=<num>] [-topFn=<value>] [-trimPfx=<value]'
+            h[0],←⊂⊂'       [-zoom=<num>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
@@ -144,6 +145,11 @@
             h[1],←⊂⊂'                   files are too large).'
             h[1],←⊂⊂''
             h[1],←⊂⊂'                   If not fully qualified, the #. root namespace is assumed.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-trimPfx=<value>   Specifies a prefix to be trimmed from function names when'
+            h[1],←⊂⊂'                   displayed. Prefixes of "#." are removed by default unless'
+            h[1],←⊂⊂'                   this value is overridden.'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-zoom=<num>        Sets the zoom level applied to the HtmlRenderer window. Only'

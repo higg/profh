@@ -53,7 +53,7 @@
     :EndIf
 
     ct←Profile.removeHeaders ct         ⍝ Remove whole-function header entries
-    ct[;2]←'#.'trimPfx ct[;2]           ⍝ Trim root namespace indicators
+    ct[;2]←cfg.trimPfx trimPfx ct[;2]   ⍝ Trim function names (e.g. remove root namespace)
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.

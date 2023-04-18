@@ -11,6 +11,7 @@
     Default.msScale         ←1000       ⍝ Scaling factor applied to millisecond timing values for presentation
     Default.showCmd         ←0          ⍝ If set, displays external command before execution
     Default.topFn           ←''         ⍝ Explicit top-level function (prune above)
+    Default.trimPfx         ←'#.'       ⍝ Specifies prefix to remove when displaying function names
     Default.zoom            ←0          ⍝ HtmlRenderer zoom level
 
     Curr←Default                        ⍝ Holds configuration used at runtime
