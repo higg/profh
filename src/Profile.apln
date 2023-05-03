@@ -40,11 +40,12 @@
     ⍝
     ⍝ --- Tree-pruning helpers -------------------------------------------------
     ⍝
-    ⍝ The functions in this section all work on inverted tables of call tree
-    ⍝ data as consistent with the return of  (⍳8)⎕PROFILE'tree' . Note that only
-    ⍝ the first two columns are refererenced in these routines, so a vector
-    ⍝ composed of any subset of columns will still work, provided the first two
-    ⍝ are intact.
+    ⍝ The functions in this section all work on call tree data composed as a
+    ⍝ vector of column vectors consistent with the return of (⍳8)⎕PROFILE'tree'.
+    ⍝
+    ⍝ Note that only the first two columns are referenced in these routines, so
+    ⍝ a vector composed of any subset of columns will still work, provided the
+    ⍝ first two are intact.
     ⍝
 
     ⍝

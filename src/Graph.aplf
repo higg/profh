@@ -3,16 +3,26 @@
     cfg←Config.Curr                     ⍝ Alias effective configuration
 
     ⍝
-    ⍝ Fetch profiled call tree from ⎕PROFILE subsystem, unless explicitly
-    ⍝ provided.
+    ⍝ Fetch profiled call tree from ⎕PROFILE subsystem, or from configured
+    ⍝ in-memory location.
     ⍝
-    ⍝ Call tree data is an inverted-table with columns as follows:
+    ⍝ Call tree data is a vector of vectors with entries as follows:
     ⍝   [1] depth level
     ⍝   [2] function name
     ⍝   [3] function line number -- note that whole-function entries are ¯1, not ⍬
     ⍝   [4] exclusive accumulated time (ms)
     ⍝
-    ct←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w
+    :If ×≢cfg.data
+        out 'Using profile data located in ''',cfg.data,''''
+        :Trap 0
+            ct←(⊂1 2 3 5)⌷⍎cfg.data
+        :Else
+            out 'Unable to retrieve profile data from ''',cfg.data,''''
+            :Return
+        :EndTrap
+    :Else
+        ct←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w
+    :EndIf
 
     :If 0=≢⊃ct                          ⍝ Abort if no profile data availabl
         out 'ERROR: No profile data!'

@@ -82,7 +82,7 @@
         ⍵.Run←speedscope
         ⍵.Desc←'Visualize performance profile data with speedscope'
         ⍵.Parse ←'9999S -browser=chrome firefox edge url -keepTemp -showCmd -zoom∊¯.',⎕D,' '
-        ⍵.Parse,←'-topFn= -cpu -trimPfx= -keepCtx -msScale∊¯.e',⎕D,' '
+        ⍵.Parse,←'-topFn= -cpu -trimPfx= -keepCtx -data= -msScale∊¯.e',⎕D,' '
 
         ⍵.HelpText←{
             ⎕IO←0 ⋄ h←3↑⊂⍬
@@ -91,14 +91,15 @@
             h[0],←⊂⊂'fully-local, interactive flame graph visualization tool.'
             h[0],←⊂⊂''
             h[0],←⊂⊂'  ]speedscope [<expr> [<expr> ...]] [-browser={chrome|firefox|edge|url}] [-cpu]'
-            h[0],←⊂⊂'       [-keepCtx] [-keepTemp] [-msScale=<num>] [-topFn=<value>]'
+            h[0],←⊂⊂'       [-data=<expr>] [-keepCtx] [-keepTemp] [-msScale=<num>] [-topFn=<value>]'
             h[0],←⊂⊂'       [-trimPfx=<value] [-zoom=<num>]'
             h[1],←⊂⊂''
             h[1],←⊂⊂'This command takes any number of APL expressions as arguments. These'
             h[1],←⊂⊂'expressions are executed and profiled in sequence, and the aggregated profile'
             h[1],←⊂⊂'data is passed to speedscope for visualization. If no expressions are provided,'
-            h[1],←⊂⊂'speedscope is passed the pre-existing contents of ⎕PROFILE''s data buffers, if'
-            h[1],←⊂⊂'any.'
+            h[1],←⊂⊂'speedscope is passed the pre-existing contents of ⎕PROFILE''s data cache, if'
+            h[1],←⊂⊂'any. The -data modifier can be used to specify previously collected profile'
+            h[1],←⊂⊂'data that resides outside of the ⎕PROFILE cache.'
             h[1],←⊂⊂''
             h[1],←⊂⊂'Please note that if any expressions are provided, the previous contents of'
             h[1],←⊂⊂'⎕PROFILE''s buffers are purged.'
@@ -119,6 +120,20 @@
             h[1],←⊂⊂''
             h[1],←⊂⊂'-cpu               When set, profiling is based on CPU timer, otherwise elapsed'
             h[1],←⊂⊂'                   time. Ignored if no expression is provided'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'-data              Specifies an expression that evaluates to a set of'
+            h[1],←⊂⊂'                   previously collected profile data to be used (e.g. a fully-'
+            h[1],←⊂⊂'                   qualified variable name).'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   This data must be a vector consistent with:'
+            h[1],←⊂⊂'                       (⍳8)⎕PROFILE''tree'''
+            h[1],←⊂⊂'                   Not all columns are required, but the first five must be'
+            h[1],←⊂⊂'                   present.'
+            h[1],←⊂⊂''
+            h[1],←⊂⊂'                   When specified, this data is used in preference to any data'
+            h[1],←⊂⊂'                   in the ⎕PROFILE cache. Any expression passed as an argument'
+            h[1],←⊂⊂'                   to the user command is ignored.'
             h[1],←⊂⊂''
             h[1],←⊂⊂''
             h[1],←⊂⊂'-keepTemp          When set, any temporary export files created during previous'
@@ -191,10 +206,11 @@
         r↑⍨←1-⍨⊃⌽⍸r='/'                 ⍝ Back up one directory
     ∇
 
-    ∇ speedscope input;e;f
+    ∇ speedscope input;e;f;x
         f←1 ##.NS.Config.Curr.cpu       ⍝ Profiling (f)lags
         e←input.Arguments               ⍝ Pluck (e)xpressions for profiling, if any
-        {}f(##.NS.Profile.prof⍣(×≢e))e  ⍝ If so, profile expressions, clearing previous profile data
+        x←##.NS.Config.Curr.data<⍥(×≢)e ⍝ Determine if expression e(x)ecution is required
+        {}f(##.NS.Profile.prof⍣x)e      ⍝ If so, profile expressions, clearing previous profile data
         ##.NS.Graph ⍬                   ⍝ Export data, launch external tool
     ∇
 

@@ -6,6 +6,7 @@
     Default←⎕NS⍬
     Default.browser         ←''         ⍝ Browser launched for web-based applications (HtmlRenderer if empty)
     Default.cpu             ←0          ⍝ Launch ⎕PROFILE in cpu mode, else elapsed
+    Default.data            ←''         ⍝ Expression specifying profile data to use instead of ⎕PROFILE cache
     Default.keepTemp        ←0          ⍝ Indicates if previous temporary files should be kept rather than deleted
     Default.keepCtx         ←0          ⍝ If set, disables heuristic to eliminate stack entries already present at profile start
     Default.libDir          ←''         ⍝ Directory housing external tools/libraries (e.g. speedscope), set later
