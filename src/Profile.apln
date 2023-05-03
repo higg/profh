@@ -40,10 +40,11 @@
     ⍝
     ⍝ --- Tree-pruning helpers -------------------------------------------------
     ⍝
-    ⍝ The functions in this section all work on call tree matrices as consistent
-    ⍝ with the return of  ⎕PROFILE'tree' . Note that only the first two columns
-    ⍝ are refererenced in these routines, so a matrix composed of any subset of
-    ⍝ columns will still work, provided the first two are intact. 
+    ⍝ The functions in this section all work on inverted tables of call tree
+    ⍝ data as consistent with the return of  (⍳8)⎕PROFILE'tree' . Note that only
+    ⍝ the first two columns are refererenced in these routines, so a vector
+    ⍝ composed of any subset of columns will still work, provided the first two
+    ⍝ are intact.
     ⍝
 
     ⍝
@@ -52,7 +53,7 @@
     ⍝
     trimSelf←{
         i←⍵ find⍨'._eval',⍨⍕⎕THIS       ⍝ Find node where tool invokes user code
-        i>≢⍵ : ⍵                        ⍝ Leave whole if not found
+        i>≢⊃⍵ : ⍵                       ⍝ Leave whole if not found
         i treesUnder ⍵                  ⍝ Isolate user code
     }
 
@@ -60,16 +61,16 @@
     ⍝ Finds index of function (⍺)'s first occurence in call tree matrix (⍵).
     ⍝
     find←{
-        1⍳⍨⍵[;2]≡¨⊂⍺
+        1⍳⍨(⊂⍺)≡¨2⊃⍵
     }
 
     ⍝
     ⍝ Isolates subtree at specified index (⍺) of given call tree matrix (⍵).
     ⍝
     subtree←{
-        d←⍵[⍺;1]                        ⍝ (D)epth of subtree in situ
-        e←¯1+⍺+1⍳⍨⍺↓⍵[;1]≤d             ⍝ (E)nd of subtree index, i.e. first node not deeper than root
-        _adjDepth(⍺-1)↓e↑⍵              ⍝ Trim both sides, adjust depth to origin-0
+        d←1 ⍺⊃⍵                         ⍝ (D)epth of subtree in situ
+        e←¯1+⍺+1⍳⍨⍺↓d≥⊃⍵                ⍝ (E)nd of subtree index, i.e. first node not deeper than root
+        _adjDepth(⍺-1)↓¨e↑¨⍵            ⍝ Trim both sides, adjust depth to origin-0
     }
 
     ⍝
@@ -78,8 +79,8 @@
     ⍝
     treesUnder←{
         t←⍺ subtree ⍵                   ⍝ Isolate subtree
-        t≡⍥≢⍵ : ⍵                       ⍝ Stop if unaltered (performance tweak)
-        _adjDepth t⌿⍨t[;1]>1            ⍝ Remove root level, fix children's depths
+        t≡⍥(≢⊃)⍵ : ⍵                    ⍝ Stop if unaltered (performance tweak)
+        _adjDepth t/⍨¨⊂1<⊃t             ⍝ Remove root level, fix children's depths
     }
 
     ⍝
@@ -89,7 +90,7 @@
     ⍝ trees whose roots are at equal depth.
     ⍝
     _adjDepth←{
-        ⍉-∘(⊃⍵)@1⊢⍉⍵
+        -∘(⊃⊃⍵)@1⊢⍵
     }
 
     ⍝
@@ -115,11 +116,11 @@
         ⍝   61  #.Conga.LIB.check  0  377   0.3276783972978592   0.3276783972978592   377   377
         ⍝
         ct←⍵                            ⍝ Copy (c)all (t)ree for modification
-        h←~2|ct[;1]                     ⍝ Create mask of function (h)eader entries
-        ct[⍸h;1]+←1                     ⍝ Increase header entry depth for consistency with peers (relevant to retained headers)
-        h∧←1,⍨2≡/ct[;2]                 ⍝ Exclude anomalous singleton header entries from purging
-        ct⌿⍨←~h                         ⍝ Purge normal headers
-        ct[;1](÷∘2⍤-)←1                 ⍝ Adjust depths to start at zero and increment by 1
+        h←~2|⊃ct                        ⍝ Create mask of function (h)eader entries
+        ct(+@((⊂,1),¨⍸h)⍨)←1            ⍝ Increase header entry depth for consistency with peers (relevant to retained headers)
+        h∧←1,⍨2≡/2⊃ct                   ⍝ Exclude anomalous singleton header entries from purging
+        ct⌿⍨¨←⊂~h                       ⍝ Purge normal headers
+        (⊃ct)←2÷⍨1-⍨⊃ct                 ⍝ Adjust depths to start at zero and increment by 1
         ct                              ⍝ Return modified call tree
     }
 

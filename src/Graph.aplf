@@ -1,26 +1,28 @@
 {ctl}←Graph w;arg;cfg;del;file;ix;md;p;tfn;tie;ct;b
 
     cfg←Config.Curr                     ⍝ Alias effective configuration
-    w←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w  ⍝ Fetch profile results, unless provided
-
-    :If 0=≢⊃w                           ⍝ Abort if no profile data available
-        out 'ERROR: No profile data!'
-        :Return
-    :EndIf
 
     ⍝
-    ⍝ Convert data to call tree matrix with columns as follows:
+    ⍝ Fetch profiled call tree from ⎕PROFILE subsystem, unless explicitly
+    ⍝ provided.
+    ⍝
+    ⍝ Call tree data is an inverted-table with columns as follows:
     ⍝   [1] depth level
     ⍝   [2] function name
     ⍝   [3] function line number -- note that whole-function entries are ¯1, not ⍬
     ⍝   [4] exclusive accumulated time (ms)
     ⍝
-    ct←⍉↑w                              ⍝ Convert to call tree matrix
+    ct←{⍵≢⍬:⍵ ⋄ 1 2 3 5⎕PROFILE'tree'}w
+
+    :If 0=≢⊃ct                          ⍝ Abort if no profile data availabl
+        out 'ERROR: No profile data!'
+        :Return
+    :EndIf
 
     ⍝
     ⍝ Apply call tree pruning heuristics.
     ⍝
-    ⍝ Reasons why pruning the call tree may be advantageious include:
+    ⍝ Reasons why pruning the call tree may be advantageous include:
     ⍝   - Focusing on areas of particular interest to the user.
     ⍝   - Reducing the size of the export file. Speedscope has been observed
     ⍝     to fail on files larger than ~500MB, and since the function names of
@@ -36,7 +38,7 @@
         tfn←'#.',⍣(⌊/'#⎕'≠⊃tfn)⊢tfn     ⍝ Assume root NS if not explicit
         out 'Isolating ',tfn
         ix←tfn Profile.find ct          ⍝ (I)nde(x) of function's first occurence
-        b←ix<≢ct                        ⍝ Flag if found
+        b←ix<≢⊃ct                       ⍝ Flag if found
         out (~b)/'Warning: Function ',tfn,' not found in call tree. Pruning aborted.'
         ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if found
     :ElseIf ~cfg.keepCtx
@@ -46,14 +48,14 @@
         ⍝ disabled). The heuristic used to identify those is an own-elapsed time
         ⍝ of zero at the very root of the call tree.
         ⍝
-        ix←1++/∧\0=ct[;4]               ⍝ (I)nde(x) of first entry with non-zero elaspsed time
+        ix←1++/∧\0=4⊃ct                 ⍝ (I)nde(x) of first entry with non-zero elaspsed time
         b←ix>1                          ⍝ Flag if any pruning to be done
-        out b/'Focusing under ',ct[ix;2]
+        out b/'Focusing under ',2 ix⊃ct
         ct←ix Profile.subtree⍣b⊢ct      ⍝ Prune if needed
     :EndIf
 
     ct←Profile.removeHeaders ct         ⍝ Remove whole-function header entries
-    ct[;2]←cfg.trimPfx trimPfx ct[;2]   ⍝ Trim function names (e.g. remove root namespace)
+    (2⊃ct)trimPfx⍨←cfg.trimPfx          ⍝ Trim function names (e.g. remove root namespace)
 
     ⍝
     ⍝ Delete previous temporary export files, unless directed otherwise.
@@ -75,7 +77,7 @@
     file←⊃0 ⎕NINFO tie                  ⍝ Pick up randomized filename
     ⎕NUNTIE tie
 
-    file SpeedScope ↓⍉ct                ⍝ Perform export
+    file SpeedScope ct                  ⍝ Perform export
 
     ⍝
     ⍝ Launch speedscope in browser.
